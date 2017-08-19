@@ -67,6 +67,7 @@ zh: &zh
   show_license: '显示许可证'
   tags: '文章标签'
   view: '查阅'
+  footer_content: 'Stay hungry! Stay foolish！'
 zh-cn:
   <<: *zh
 zh-hk:
