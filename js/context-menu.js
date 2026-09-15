@@ -64,6 +64,7 @@ function defaultItems() {
     item("灵感管理", "open:ideas"),
     item("日志", "open:journal"),
     item("JSON日志", "open:journal-json"),
+    item("日历", "open:calendar"),
     sep(),
     item("贴图", "open:stickers"),
     item("运行…", "open:run", { kbd: "Alt+R" }),

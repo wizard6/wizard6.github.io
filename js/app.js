@@ -14,6 +14,7 @@ import { renderWriting } from "./modules/writing.js";
 import { renderIdeas } from "./modules/ideas.js";
 import { renderJournal } from "./modules/journal.js";
 import { renderJournalJson } from "./modules/journal-json.js";
+import { renderCalendar } from "./modules/calendar.js";
 
 let cfg = null;
 let todosCache = [];
@@ -146,6 +147,19 @@ function openShortcut(id) {
 
 
 
+
+
+    case "calendar":
+      openWindow("calendar", {
+        title: meta.title || "日历",
+        icon: meta.icon || "▥",
+        width: 880,
+        height: 560,
+        mount(body) {
+          renderCalendar(body);
+        },
+      });
+      break;
 
     case "journal-json":
       openWindow("journal-json", {

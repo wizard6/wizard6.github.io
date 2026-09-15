@@ -70,6 +70,11 @@
       "title": "JSON日志"
     },
     {
+      "id": "calendar",
+      "icon": "▥",
+      "title": "日历"
+    },
+    {
       "id": "stickers",
       "icon": "▤",
       "title": "贴图"
