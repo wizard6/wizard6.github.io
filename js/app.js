@@ -151,8 +151,8 @@ function openShortcut(id) {
       openWindow("journal-json", {
         title: meta.title || "JSON日志",
         icon: meta.icon || "⊡",
-        width: 640,
-        height: 560,
+        width: 980,
+        height: 600,
         mount(body) {
           renderJournalJson(body);
         },
@@ -163,8 +163,8 @@ function openShortcut(id) {
       openWindow("journal", {
         title: meta.title || "日志",
         icon: meta.icon || "▣",
-        width: 640,
-        height: 560,
+        width: 860,
+        height: 600,
         mount(body) {
           renderJournal(body);
         },

@@ -959,8 +959,8 @@ a.ov-card:hover {
   overflow: hidden;
   background: #0b0e14;
   font-family: "JetBrains Mono", "SF Mono", ui-monospace, Menlo, Consolas, "PingFang SC", monospace;
-  font-size: 12px;
-  line-height: 1.35;
+  font-size: 12.5px;
+  line-height: 1.4;
 }
 .json-log-bar {
   display: flex; align-items: center; gap: 10px;
@@ -999,14 +999,14 @@ a.ov-card:hover {
 .jl-row {
   display: grid;
   grid-template-columns:
-    10ch
+    11ch
+    8ch
+    minmax(18ch, 1.6fr)
+    minmax(12ch, 1fr)
     7ch
-    minmax(14ch, 1.4fr)
-    minmax(10ch, 0.9fr)
-    6ch
-    6ch
-    minmax(8ch, 0.8fr)
-    minmax(16ch, 1.6fr);
+    7ch
+    minmax(10ch, 1fr)
+    minmax(22ch, 2fr);
   gap: 0 10px;
   align-items: center;
   padding: 0 12px;
