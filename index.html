@@ -34,36 +34,55 @@
       --scrollbar-thumb-active: rgba(167, 139, 250, 0.48);
     }
     * { box-sizing: border-box; }
-    html {
-      scrollbar-width: none; /* Firefox: hide native */
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden; /* window itself never scrolls => no native OS bar */
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
     }
-    html::-webkit-scrollbar,
-    body::-webkit-scrollbar {
+
+    /* hide native bars everywhere just in case */
+    * {
+      scrollbar-width: none !important;
+      -ms-overflow-style: none !important;
+    }
+    *::-webkit-scrollbar {
       width: 0 !important;
       height: 0 !important;
-      display: none;
+      display: none !important;
+      background: transparent !important;
     }
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: var(--font-sans);
-      color: var(--text);
-      background: var(--bg);
+
+    .scroll-root {
+      position: fixed;
+      inset: 0;
+      overflow-x: hidden;
+      overflow-y: auto;
+      overscroll-behavior: contain;
       scroll-behavior: smooth;
-      -ms-overflow-style: none; /* old Edge */
+      scrollbar-width: none !important;
+      -ms-overflow-style: none !important;
+    }
+    .scroll-root::-webkit-scrollbar {
+      width: 0 !important;
+      height: 0 !important;
+      display: none !important;
     }
 
     /* Custom scrollbar (non-native) */
     .sb-rail {
       position: fixed;
-      top: 12px;
-      right: 8px;
-      bottom: 12px;
-      width: 12px;
-      z-index: 50;
+      top: 10px;
+      right: 6px;
+      bottom: 10px;
+      width: 14px;
+      z-index: 100;
       pointer-events: none;
       opacity: 0;
-      transition: opacity .25s ease;
+      transition: opacity .2s ease;
     }
     .sb-rail.is-visible {
       opacity: 1;
@@ -72,26 +91,28 @@
     .sb-rail::before {
       content: "";
       position: absolute;
-      inset: 0;
+      inset: 0 3px;
       border-radius: 999px;
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(109,139,255,0.08);
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(109,139,255,0.12);
     }
     .sb-thumb {
       position: absolute;
-      left: 2px;
-      width: 8px;
-      min-height: 36px;
+      left: 4px;
+      width: 6px;
+      min-height: 40px;
       border-radius: 999px;
-      background: linear-gradient(180deg, rgba(140,168,255,0.55), rgba(167,139,250,0.42));
-      box-shadow: 0 0 16px rgba(109,139,255,0.28);
+      background: linear-gradient(180deg, rgba(140,168,255,0.7), rgba(167,139,250,0.55));
+      box-shadow: 0 0 18px rgba(109,139,255,0.35);
       cursor: grab;
       touch-action: none;
     }
     .sb-thumb:hover,
     .sb-thumb.is-dragging {
-      background: linear-gradient(180deg, rgba(160,184,255,0.85), rgba(186,156,255,0.7));
-      box-shadow: 0 0 22px rgba(109,139,255,0.42);
+      width: 8px;
+      left: 3px;
+      background: linear-gradient(180deg, rgba(170,192,255,0.95), rgba(196,168,255,0.8));
+      box-shadow: 0 0 24px rgba(109,139,255,0.5);
     }
     .sb-thumb.is-dragging { cursor: grabbing; }
     .nebula {
@@ -332,8 +353,9 @@
 <body>
   <div class="nebula" aria-hidden="true"></div>
   <div class="sb-rail" id="sb-rail" aria-hidden="true">
-    <div class="sb-thumb" id="sb-thumb" role="scrollbar" aria-controls="document" aria-orientation="vertical"></div>
+    <div class="sb-thumb" id="sb-thumb" role="scrollbar" aria-controls="scroll-root" aria-orientation="vertical"></div>
   </div>
+  <div class="scroll-root" id="scroll-root">
   <div class="app">
     <header class="site-header">
       <div class="header-inner">
@@ -446,6 +468,7 @@
       </div>
     </footer>
   </div>
+  </div>
 
   <script>
     function tick() {
@@ -465,9 +488,10 @@
 
   <script>
     (function () {
+      const root = document.getElementById("scroll-root");
       const rail = document.getElementById("sb-rail");
       const thumb = document.getElementById("sb-thumb");
-      if (!rail || !thumb) return;
+      if (!root || !rail || !thumb) return;
 
       let hideTimer = 0;
       let dragging = false;
@@ -475,17 +499,14 @@
       let dragStartScroll = 0;
 
       function metrics() {
-        const view = window.innerHeight;
-        const doc = Math.max(
-          document.documentElement.scrollHeight,
-          document.body.scrollHeight
-        );
+        const view = root.clientHeight;
+        const doc = root.scrollHeight;
         const track = rail.clientHeight;
-        const ratio = view / doc;
-        const thumbH = Math.max(36, Math.round(track * ratio));
+        const ratio = doc === 0 ? 1 : view / doc;
+        const thumbH = Math.max(40, Math.round(track * Math.min(1, ratio)));
         const maxScroll = Math.max(0, doc - view);
         const maxTop = Math.max(0, track - thumbH);
-        const top = maxScroll === 0 ? 0 : (window.scrollY / maxScroll) * maxTop;
+        const top = maxScroll === 0 ? 0 : (root.scrollTop / maxScroll) * maxTop;
         return { view, doc, track, thumbH, maxScroll, maxTop, top };
       }
 
@@ -497,9 +518,6 @@
         if (!needed) return;
         thumb.style.height = m.thumbH + "px";
         thumb.style.transform = "translateY(" + m.top + "px)";
-        thumb.setAttribute("aria-valuenow", String(Math.round(window.scrollY)));
-        thumb.setAttribute("aria-valuemin", "0");
-        thumb.setAttribute("aria-valuemax", String(Math.round(m.maxScroll)));
       }
 
       function flash() {
@@ -511,9 +529,9 @@
         rail.classList.add("is-visible");
         clearTimeout(hideTimer);
         if (!dragging) {
-          hideTimer = setTimeout(() => {
+          hideTimer = setTimeout(function () {
             if (!dragging) rail.classList.remove("is-visible");
-          }, 900);
+          }, 1000);
         }
       }
 
@@ -522,22 +540,22 @@
         flash();
       }
 
-      thumb.addEventListener("pointerdown", (e) => {
+      thumb.addEventListener("pointerdown", function (e) {
         dragging = true;
         thumb.classList.add("is-dragging");
         dragStartY = e.clientY;
-        dragStartScroll = window.scrollY;
+        dragStartScroll = root.scrollTop;
         thumb.setPointerCapture(e.pointerId);
         flash();
         e.preventDefault();
       });
 
-      thumb.addEventListener("pointermove", (e) => {
+      thumb.addEventListener("pointermove", function (e) {
         if (!dragging) return;
         const m = metrics();
         const dy = e.clientY - dragStartY;
         const scrollDelta = m.maxTop === 0 ? 0 : (dy / m.maxTop) * m.maxScroll;
-        window.scrollTo(0, dragStartScroll + scrollDelta);
+        root.scrollTop = dragStartScroll + scrollDelta;
       });
 
       function endDrag(e) {
@@ -550,21 +568,19 @@
       thumb.addEventListener("pointerup", endDrag);
       thumb.addEventListener("pointercancel", endDrag);
 
-      rail.addEventListener("pointerdown", (e) => {
+      rail.addEventListener("pointerdown", function (e) {
         if (e.target === thumb) return;
         const m = metrics();
         const rect = rail.getBoundingClientRect();
         const y = e.clientY - rect.top - m.thumbH / 2;
         const top = Math.min(m.maxTop, Math.max(0, y));
-        const scroll = m.maxTop === 0 ? 0 : (top / m.maxTop) * m.maxScroll;
-        window.scrollTo({ top: scroll, behavior: "smooth" });
+        root.scrollTop = m.maxTop === 0 ? 0 : (top / m.maxTop) * m.maxScroll;
         flash();
       });
 
-      window.addEventListener("scroll", onScroll, { passive: true });
-      window.addEventListener("resize", () => { render(); flash(); });
+      root.addEventListener("scroll", onScroll, { passive: true });
+      window.addEventListener("resize", function () { render(); flash(); });
       render();
-      // show briefly on load if scrollable
       flash();
     })();
   </script>
