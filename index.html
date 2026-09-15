@@ -171,7 +171,49 @@
       background: rgba(109,139,255,.1);
       color: #b8c8ff;
     }
-    .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 10px rgba(52,211,153,.7); }
+    .dot {
+      position: relative;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--ok);
+      box-shadow: 0 0 10px rgba(52,211,153,.75);
+      flex-shrink: 0;
+    }
+    .dot::before,
+    .dot::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(52, 211, 153, 0.85);
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 0.9;
+      pointer-events: none;
+    }
+    .dot::before {
+      animation: breath-ring 2.2s ease-out infinite;
+    }
+    .dot::after {
+      animation: breath-ring 2.2s ease-out infinite 1.1s;
+    }
+    @keyframes breath-ring {
+      0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.85;
+      }
+      70% {
+        transform: translate(-50%, -50%) scale(2.5);
+        opacity: 0;
+      }
+      100% {
+        transform: translate(-50%, -50%) scale(2.5);
+        opacity: 0;
+      }
+    }
 
     .container {
       max-width: 1120px;
