@@ -1,357 +1,405 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="dark" class="nebula-active">
+<html lang="zh-CN" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="wizard6 · 个人站点" />
-  <title>wizard6</title>
+  <meta name="description" content="wizard6 · 云端工作台" />
+  <title>云端工作台 · wizard6</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Noto+Serif+SC:wght@500;700&family=Zhi+Mang+Xing&display=swap" rel="stylesheet" />
   <style>
     :root {
       --radius: 16px;
-      --font-serif: "Noto Serif SC", "Songti SC", "SimSun", serif;
+      --radius-sm: 10px;
+      --font-serif: "Noto Serif SC", "Songti SC", serif;
       --font-sans: "Segoe UI", system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
       --font-epitaph: "Great Vibes", "Zhi Mang Xing", "Noto Serif SC", cursive;
       --bg: #080a0f;
-      --bg-elevated: #0f131c;
-      --card: #141a26;
+      --card: rgba(20, 26, 38, 0.72);
+      --card-hover: rgba(26, 34, 51, 0.88);
       --text: #eef2ff;
       --text-soft: #c8d2e8;
       --muted: #7b8ba8;
       --accent: #6d8bff;
       --accent-2: #a78bfa;
-      --accent-glow: rgba(109, 139, 255, 0.18);
       --line: #243044;
-      --header-bg: rgba(8, 10, 15, 0.52);
-      --hero-bg: linear-gradient(135deg, rgba(109, 139, 255, 0.08), rgba(167, 139, 250, 0.05));
+      --ok: #34d399;
+      --warn: #fbbf24;
       --shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
     }
-
     * { box-sizing: border-box; }
-    html, body { height: 100%; }
     body {
       margin: 0;
       min-height: 100vh;
       font-family: var(--font-sans);
       color: var(--text);
       background: var(--bg);
-      overflow-x: hidden;
     }
-
     .nebula {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
       background:
-        radial-gradient(900px 520px at 12% 8%, rgba(109, 139, 255, 0.22), transparent 55%),
-        radial-gradient(700px 480px at 88% 18%, rgba(167, 139, 250, 0.18), transparent 50%),
-        radial-gradient(600px 420px at 50% 100%, rgba(56, 189, 248, 0.08), transparent 55%),
+        radial-gradient(900px 520px at 12% 8%, rgba(109,139,255,.22), transparent 55%),
+        radial-gradient(700px 480px at 88% 18%, rgba(167,139,250,.18), transparent 50%),
+        radial-gradient(600px 420px at 70% 90%, rgba(56,189,248,.07), transparent 55%),
         var(--bg);
     }
-    .nebula::before,
-    .nebula::after {
+    .nebula::before {
       content: "";
-      position: absolute;
-      inset: -20%;
+      position: absolute; inset: -10%;
       background-image:
-        radial-gradient(1.5px 1.5px at 10% 20%, rgba(255,255,255,0.7), transparent),
-        radial-gradient(1px 1px at 30% 70%, rgba(255,255,255,0.45), transparent),
-        radial-gradient(1.5px 1.5px at 55% 35%, rgba(200,210,255,0.8), transparent),
-        radial-gradient(1px 1px at 75% 55%, rgba(255,255,255,0.5), transparent),
-        radial-gradient(1.5px 1.5px at 90% 25%, rgba(180,190,255,0.65), transparent),
-        radial-gradient(1px 1px at 15% 85%, rgba(255,255,255,0.4), transparent),
-        radial-gradient(1px 1px at 45% 10%, rgba(255,255,255,0.55), transparent),
-        radial-gradient(1.5px 1.5px at 65% 80%, rgba(200,220,255,0.55), transparent);
-      animation: drift 48s linear infinite;
-      opacity: 0.85;
+        radial-gradient(1.5px 1.5px at 12% 22%, rgba(255,255,255,.7), transparent),
+        radial-gradient(1px 1px at 28% 68%, rgba(255,255,255,.4), transparent),
+        radial-gradient(1.5px 1.5px at 58% 34%, rgba(200,210,255,.75), transparent),
+        radial-gradient(1px 1px at 78% 58%, rgba(255,255,255,.45), transparent),
+        radial-gradient(1.5px 1.5px at 92% 24%, rgba(180,190,255,.6), transparent),
+        radial-gradient(1px 1px at 48% 12%, rgba(255,255,255,.5), transparent);
+      opacity: .8;
+      animation: drift 60s linear infinite;
     }
-    .nebula::after {
-      animation-duration: 72s;
-      animation-direction: reverse;
-      opacity: 0.5;
-      filter: blur(0.2px);
-    }
-    @keyframes drift {
-      from { transform: translate3d(0, 0, 0); }
-      to { transform: translate3d(-4%, 3%, 0); }
-    }
+    @keyframes drift { to { transform: translate3d(-3%, 2%, 0); } }
 
-    .app {
-      position: relative;
-      z-index: 1;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
+    .app { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; }
 
     .site-header {
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      background: var(--header-bg);
+      position: sticky; top: 0; z-index: 20;
+      backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+      background: rgba(8,10,15,.52);
       border-bottom: 1px solid var(--line);
     }
     .site-header::after {
-      content: "";
-      display: block;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(196,178,250,0.35), transparent);
-      box-shadow: 0 0 16px rgba(167,139,250,0.25);
+      content: ""; display: block; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(196,178,250,.35), transparent);
     }
     .header-inner {
-      max-width: 1120px;
-      margin: 0 auto;
-      padding: 14px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
+      max-width: 1120px; margin: 0 auto; padding: 14px 20px;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
     }
     .brand {
-      color: var(--text);
-      text-decoration: none;
-      font-family: var(--font-serif);
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      font-size: 1.05rem;
+      color: var(--text); text-decoration: none;
+      font-family: var(--font-serif); font-weight: 700; letter-spacing: .06em;
     }
-    .brand:hover { color: #fff; }
-    .nav {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
+    .brand span { color: var(--accent-2); font-weight: 500; margin-left: .45rem; font-size: .85rem; letter-spacing: .12em; }
+    .header-meta {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      color: var(--muted); font-size: .82rem;
     }
-    .nav a {
-      color: var(--muted);
-      text-decoration: none;
-      font-size: 0.88rem;
-      padding: 8px 12px;
-      border-radius: 999px;
-      transition: color 0.2s, background 0.2s;
+    .pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 10px; border-radius: 999px;
+      border: 1px solid rgba(109,139,255,.22);
+      background: rgba(109,139,255,.1);
+      color: #b8c8ff;
     }
-    .nav a:hover,
-    .nav a.is-active {
-      color: var(--text);
-      background: rgba(109, 139, 255, 0.12);
-    }
+    .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 10px rgba(52,211,153,.7); }
 
-    main {
-      flex: 1;
-      display: grid;
-      place-items: center;
-      padding: 48px 20px 64px;
-    }
+    .container { max-width: 1120px; margin: 0 auto; padding: 28px 20px 48px; width: 100%; }
 
     .hero {
       position: relative;
-      width: min(720px, 100%);
-      padding: 44px 36px 36px;
-      border-radius: calc(var(--radius) + 4px);
+      padding: 28px 28px 24px;
+      border-radius: calc(var(--radius) + 2px);
       border: 1px solid var(--line);
-      background: var(--hero-bg), rgba(20, 26, 38, 0.72);
+      background: var(--hero-bg, linear-gradient(135deg, rgba(109,139,255,.08), rgba(167,139,250,.05))), var(--card);
       box-shadow: var(--shadow);
+      margin-bottom: 22px;
       overflow: hidden;
-      backdrop-filter: blur(10px);
     }
     .hero::before {
-      content: "";
-      position: absolute;
-      top: -40%;
-      right: -10%;
-      width: 320px;
-      height: 320px;
-      background: radial-gradient(circle, var(--accent-glow), transparent 70%);
+      content: ""; position: absolute; top: -40%; right: -8%;
+      width: 280px; height: 280px;
+      background: radial-gradient(circle, rgba(109,139,255,.18), transparent 70%);
       pointer-events: none;
     }
-    .hero-body {
-      position: relative;
-      z-index: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-    }
+    .hero-body { position: relative; z-index: 1; }
     .hero-eyebrow {
-      font-size: 0.78rem;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--accent-2);
-      margin-bottom: 12px;
+      font-size: .78rem; letter-spacing: .14em; text-transform: uppercase;
+      color: var(--accent-2); margin-bottom: 8px;
     }
     .hero h1 {
+      margin: 0 0 8px;
       font-family: var(--font-serif);
-      margin: 0 0 14px;
-      font-size: clamp(2rem, 5vw, 2.8rem);
-      line-height: 1.2;
+      font-size: clamp(1.7rem, 3.5vw, 2.3rem);
       font-weight: 700;
-      background: linear-gradient(120deg, #fff, #c8d2e8 45%, #b8c8ff);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      text-shadow: 0 0 40px rgba(109, 139, 255, 0.15);
     }
     .hero-desc {
-      margin: 0 0 22px;
-      max-width: 18em;
-      font-size: clamp(1.45rem, 3.4vw, 2rem);
+      margin: 0;
       font-family: var(--font-epitaph);
-      font-weight: 400;
-      letter-spacing: 0.08em;
-      line-height: 1.45;
+      font-size: clamp(1.25rem, 2.6vw, 1.65rem);
       color: var(--text-soft);
+      letter-spacing: .06em;
     }
-    .hero-desc .ch {
-      display: inline-block;
-      transition: color 0.15s linear, transform 0.15s ease;
+    .hero-row {
+      display: flex; flex-wrap: wrap; gap: 14px 24px;
+      align-items: flex-end; justify-content: space-between;
+      margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line);
     }
-    .hero-desc:hover .ch {
-      animation: shimmer 1.2s ease both;
+    .stat {
+      min-width: 88px;
     }
-    @keyframes shimmer {
-      0%, 100% { color: var(--text-soft); }
-      35% { color: #c4b5fd; }
-      70% { color: #93c5fd; }
+    .stat strong {
+      display: block; font-size: 1.2rem; color: var(--text);
+      font-family: var(--font-serif);
     }
+    .stat span { color: var(--muted); font-size: .75rem; letter-spacing: .04em; }
 
-    .hero-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      justify-content: center;
-      width: min(100%, 42rem);
-      padding-top: 20px;
-      border-top: 1px solid var(--line);
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 14px;
     }
-    .btn {
-      appearance: none;
-      border: 1px solid rgba(109, 139, 255, 0.28);
-      background: rgba(109, 139, 255, 0.14);
-      color: #dbe4ff;
-      border-radius: 999px;
-      padding: 0.7rem 1.2rem;
-      font: 600 0.9rem var(--font-sans);
+    .card {
+      grid-column: span 4;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--card);
+      backdrop-filter: blur(10px);
+      padding: 18px 18px 16px;
+      box-shadow: var(--shadow);
+      transition: transform .2s ease, border-color .2s ease, background .2s ease;
       text-decoration: none;
-      cursor: pointer;
-      transition: background 0.2s, border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      min-height: 158px;
     }
-    .btn:hover {
-      background: rgba(109, 139, 255, 0.24);
-      border-color: rgba(140, 168, 255, 0.5);
-      box-shadow: 0 0 24px rgba(109, 139, 255, 0.22);
-      transform: translateY(-1px);
+    .card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(140,168,255,.45);
+      background: var(--card-hover);
+      box-shadow: 0 0 0 1px rgba(109,139,255,.18), 0 16px 40px rgba(0,0,0,.4);
     }
-    .btn.ghost {
-      background: transparent;
-      border-color: var(--line);
+    .card.wide { grid-column: span 8; }
+    .card.full { grid-column: span 12; }
+    .card-kicker {
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+      margin-bottom: 10px;
+    }
+    .card-icon {
+      width: 34px; height: 34px; border-radius: 10px;
+      display: grid; place-items: center;
+      background: rgba(109,139,255,.12);
+      border: 1px solid rgba(109,139,255,.2);
+      color: #c4d0ff;
+      font-size: 1rem;
+    }
+    .badge {
+      font-size: .7rem; padding: 3px 8px; border-radius: 999px;
+      background: rgba(52,211,153,.12); color: #6ee7b7;
+      border: 1px solid rgba(52,211,153,.25);
+    }
+    .badge.idle {
+      background: rgba(123,139,168,.12); color: var(--muted);
+      border-color: rgba(123,139,168,.25);
+    }
+    .badge.soon {
+      background: rgba(251,191,36,.1); color: #fcd34d;
+      border-color: rgba(251,191,36,.25);
+    }
+    .card h2 {
+      margin: 0 0 8px;
+      font-size: 1.05rem;
+      font-family: var(--font-serif);
+      font-weight: 700;
+    }
+    .card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: .88rem;
+      line-height: 1.55;
+      flex: 1;
+    }
+    .card-foot {
+      margin-top: 14px;
+      display: flex; align-items: center; justify-content: space-between;
+      color: #b8c8ff; font-size: .8rem;
+    }
+    .card-foot span { color: var(--muted); }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--card);
+      padding: 16px 18px;
+    }
+    .panel h3 {
+      margin: 0 0 12px;
+      font-size: .82rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--accent-2);
+      font-weight: 600;
+    }
+    .quick {
+      display: flex; flex-wrap: wrap; gap: 8px;
+    }
+    .chip {
+      appearance: none; border: 1px solid var(--line);
+      background: rgba(255,255,255,.03);
       color: var(--text-soft);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font: 500 .82rem var(--font-sans);
+      cursor: pointer;
+      text-decoration: none;
+      transition: border-color .2s, background .2s, color .2s;
     }
-    .btn.ghost:hover {
-      border-color: rgba(167, 139, 250, 0.45);
+    .chip:hover {
+      border-color: rgba(109,139,255,.4);
+      background: rgba(109,139,255,.1);
       color: var(--text);
-      background: rgba(167, 139, 250, 0.08);
     }
 
     .site-footer {
+      margin-top: auto;
       border-top: 1px solid var(--line);
-      background: rgba(8, 10, 15, 0.4);
-      backdrop-filter: blur(10px);
+      background: rgba(8,10,15,.4);
     }
     .footer-inner {
-      max-width: 1120px;
-      margin: 0 auto;
-      padding: 16px 20px;
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
-      color: var(--muted);
-      font-size: 0.82rem;
+      max-width: 1120px; margin: 0 auto; padding: 14px 20px;
+      display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap;
+      color: var(--muted); font-size: .8rem;
     }
     .footer-inner a { color: var(--accent); text-decoration: none; }
-    .footer-inner a:hover { color: #9cb4ff; }
 
-    .cursor-glow {
-      position: fixed;
-      width: 220px;
-      height: 220px;
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 0;
-      background: radial-gradient(circle, rgba(109,139,255,0.14), transparent 70%);
-      transform: translate(-50%, -50%);
-      transition: opacity 0.25s ease;
-      opacity: 0;
-    }
-    @media (pointer: fine) {
-      body.has-pointer .cursor-glow { opacity: 1; }
+    @media (max-width: 900px) {
+      .card, .card.wide { grid-column: span 6; }
     }
     @media (max-width: 640px) {
-      .hero { padding: 32px 22px 28px; }
-      .nav { display: none; }
+      .card, .card.wide, .card.full { grid-column: span 12; }
+      .hero { padding: 22px 18px; }
     }
   </style>
 </head>
 <body>
   <div class="nebula" aria-hidden="true"></div>
-  <div class="cursor-glow" id="cursor-glow" aria-hidden="true"></div>
-
   <div class="app">
     <header class="site-header">
       <div class="header-inner">
-        <a class="brand" href="./">wizard6</a>
-        <nav class="nav" aria-label="主导航">
-          <a class="is-active" href="./">首页</a>
-          <a href="https://github.com/wizard6" target="_blank" rel="noreferrer">GitHub</a>
-        </nav>
+        <a class="brand" href="./">wizard6<span>CLOUD WORKBENCH</span></a>
+        <div class="header-meta">
+          <span class="pill"><i class="dot" aria-hidden="true"></i> 云端在线</span>
+          <span id="clock">--:--</span>
+        </div>
       </div>
     </header>
 
-    <main>
-      <section class="hero" aria-label="欢迎">
+    <div class="container">
+      <section class="hero">
         <div class="hero-body">
-          <div class="hero-eyebrow">Personal Site</div>
-          <h1>wizard6</h1>
-          <p class="hero-desc" id="hero-desc">记录想法与创作</p>
-          <div class="hero-actions">
-            <a class="btn" href="https://github.com/wizard6" target="_blank" rel="noreferrer">访问 GitHub</a>
-            <a class="btn ghost" href="https://github.com/wizard6/wizard6.github.io" target="_blank" rel="noreferrer">本站仓库</a>
+          <div class="hero-eyebrow">Cloud Workbench</div>
+          <h1>云端工作台</h1>
+          <p class="hero-desc">把常用入口收进一处，随时开工</p>
+          <div class="hero-row">
+            <div style="display:flex;gap:22px;flex-wrap:wrap;">
+              <div class="stat"><strong id="mod-count">6</strong><span>工作区模块</span></div>
+              <div class="stat"><strong>GitHub</strong><span>已连接账号</span></div>
+              <div class="stat"><strong id="daypart">—</strong><span>当前时段</span></div>
+            </div>
+            <div class="quick" aria-label="快捷操作">
+              <a class="chip" href="https://github.com/wizard6" target="_blank" rel="noreferrer">打开 GitHub</a>
+              <a class="chip" href="https://github.com/wizard6?tab=repositories" target="_blank" rel="noreferrer">仓库列表</a>
+              <a class="chip" href="https://github.com/wizard6/wizard6.github.io" target="_blank" rel="noreferrer">本站源码</a>
+            </div>
           </div>
         </div>
       </section>
-    </main>
+
+      <div class="grid" id="modules">
+        <a class="card" href="https://github.com/wizard6" target="_blank" rel="noreferrer">
+          <div class="card-kicker">
+            <div class="card-icon">⌘</div>
+            <span class="badge">就绪</span>
+          </div>
+          <h2>代码仓库</h2>
+          <p>跳转到 GitHub，查看与管理项目、PR 与提交记录。</p>
+          <div class="card-foot"><b>进入</b><span>wizard6</span></div>
+        </a>
+
+        <a class="card" href="https://github.com/wizard6/wizard6.github.io" target="_blank" rel="noreferrer">
+          <div class="card-kicker">
+            <div class="card-icon">◈</div>
+            <span class="badge">本站</span>
+          </div>
+          <h2>站点工程</h2>
+          <p>当前 GitHub Pages 站点仓库，静态页与工作台源码都在这里。</p>
+          <div class="card-foot"><b>进入</b><span>wizard6.github.io</span></div>
+        </a>
+
+        <a class="card" href="https://github.com/wizard6/temp" target="_blank" rel="noreferrer">
+          <div class="card-kicker">
+            <div class="card-icon">✎</div>
+            <span class="badge idle">笔记</span>
+          </div>
+          <h2>知识库入口</h2>
+          <p>连接到你的 Obsidian / forAi 相关仓库，继续沉淀想法与方法论。</p>
+          <div class="card-foot"><b>进入</b><span>temp</span></div>
+        </a>
+
+        <div class="card wide" style="cursor:default;">
+          <div class="card-kicker">
+            <div class="card-icon">☁</div>
+            <span class="badge soon">规划中</span>
+          </div>
+          <h2>今日焦点</h2>
+          <p>主战场：AI 辅助内容创作——优先推进可发布的 2D 小游戏，小说作为副线。可把任务、链接与草稿挂到这里。</p>
+          <div class="card-foot"><b>工作台模块</b><span>可后续接入清单</span></div>
+        </div>
+
+        <div class="card" style="cursor:default;">
+          <div class="card-kicker">
+            <div class="card-icon">◎</div>
+            <span class="badge idle">预留</span>
+          </div>
+          <h2>阅读与灵感</h2>
+          <p>留给读书笔记、摘录与灵感卡片。风格对齐你现有的深色星云站。</p>
+          <div class="card-foot"><b>占位</b><span>soon</span></div>
+        </div>
+
+        <div class="card" style="cursor:default;">
+          <div class="card-kicker">
+            <div class="card-icon">⚡</div>
+            <span class="badge idle">预留</span>
+          </div>
+          <h2>自动化</h2>
+          <p>定时检查、仓库动态、提醒入口可以长在这里，做成你的云端控制台。</p>
+          <div class="card-foot"><b>占位</b><span>soon</span></div>
+        </div>
+
+        <section class="card full panel" style="min-height:auto;cursor:default;">
+          <h3>Workbench Notes</h3>
+          <div class="quick">
+            <span class="chip" style="cursor:default;">深色星云风格</span>
+            <span class="chip" style="cursor:default;">毛玻璃面板</span>
+            <span class="chip" style="cursor:default;">模块化入口</span>
+            <a class="chip" href="http://47.95.115.236/" target="_blank" rel="noreferrer">风格参考站</a>
+          </div>
+        </section>
+      </div>
+    </div>
 
     <footer class="site-footer">
       <div class="footer-inner">
-        <span>wizard6 · welcome</span>
+        <span>wizard6 · 云端工作台</span>
         <a href="https://github.com/wizard6/wizard6.github.io">Source</a>
       </div>
     </footer>
   </div>
 
   <script>
-    // rainbow-ish calligraphy chars (inspired by reference site hero-desc)
-    const desc = document.getElementById("hero-desc");
-    const raw = desc.textContent.trim();
-    const palette = ["#c8d2e8", "#b8c8ff", "#c4b5fd", "#93c5fd", "#e9d5ff", "#a5b4fc"];
-    desc.innerHTML = [...raw].map((ch, i) => {
-      if (ch === " ") return " ";
-      const color = palette[i % palette.length];
-      return `<span class="ch" style="color:${color}">${ch}</span>`;
-    }).join("");
-
-    const glow = document.getElementById("cursor-glow");
-    if (window.matchMedia("(pointer: fine)").matches) {
-      document.body.classList.add("has-pointer");
-      window.addEventListener("pointermove", (e) => {
-        glow.style.left = e.clientX + "px";
-        glow.style.top = e.clientY + "px";
-      }, { passive: true });
+    function tick() {
+      const now = new Date();
+      const hh = String(now.getHours()).padStart(2, "0");
+      const mm = String(now.getMinutes()).padStart(2, "0");
+      document.getElementById("clock").textContent = hh + ":" + mm;
+      const h = now.getHours();
+      document.getElementById("daypart").textContent =
+        h < 6 ? "深夜" : h < 12 ? "上午" : h < 18 ? "下午" : "夜晚";
     }
+    tick();
+    setInterval(tick, 15000);
+    document.getElementById("mod-count").textContent =
+      document.querySelectorAll("#modules > .card").length;
   </script>
 </body>
 </html>
