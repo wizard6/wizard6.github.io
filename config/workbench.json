@@ -45,6 +45,16 @@
       "title": "读书"
     },
     {
+      "id": "booklist",
+      "icon": "📚",
+      "title": "书单"
+    },
+    {
+      "id": "writing",
+      "icon": "✎",
+      "title": "创作"
+    },
+    {
       "id": "stickers",
       "icon": "🖼",
       "title": "贴图"

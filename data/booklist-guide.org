@@ -1,0 +1,45 @@
+#+TITLE: 书单填写说明
+#+AUTHOR: wizard6
+
+* 文件
+- 数据：=data/booklist.org=
+- 说明：=data/booklist-guide.org=
+
+* 一条书单怎么写
+#+begin_example
+** TODO 书名 :类型:优先级:
+:PROPERTIES:
+:WORDS: 0
+:PRIORITY: A
+:SOURCE: 推荐人/链接
+:END:
+备注（为何想读）
+#+end_example
+
+* 状态
+| 关键字 | 含义 |
+|--------+------|
+| TODO   | 想读 |
+| NEXT   | 下一本优先 |
+| BOUGHT | 已买未读 |
+| WAIT   | 等出版 / 暂停 |
+| DONE   | 已读完（可与读书模块呼应） |
+| CANCELLED | 不看了 |
+
+* 属性
+| 属性 | 说明 |
+|------+------|
+| PRIORITY | A/B/C（可选） |
+| WORDS | 预估字数（可选） |
+| SOURCE | 来源 |
+| NOTE | 短注 |
+
+* 结构建议
+#+begin_example
+* 想读
+* 下一本
+* 已购待读
+* 放弃 / 不看
+#+end_example
+
+需要代填时：发书名、状态、标签即可。

@@ -1,0 +1,52 @@
+#+TITLE: 创作书籍填写说明
+#+AUTHOR: wizard6
+
+* 文件
+- 数据：=data/writing.org=
+- 说明：=data/writing-guide.org=
+
+* 一部作品怎么写
+#+begin_example
+** DRAFTING 作品名 :小说:主线:
+:PROPERTIES:
+:WORDS: 12000
+:DURATION: 8h
+:CHAPTERS: 3
+:LAST: 2026-09-15
+:REPO: https://github.com/wizard6/...
+:END:
+- 当前章：……
+- 卡点：……
+#+end_example
+
+* 状态
+| 关键字 | 含义 |
+|--------+------|
+| IDEA     | 点子 |
+| OUTLINE  | 大纲 |
+| DRAFTING | 正文写作中 |
+| REVISING | 修订中 |
+| NEXT     | 下一部启动 |
+| PUBLISHED | 已发布 |
+| SHELVED  | 搁置 |
+| DONE     | 完结（未发布也可） |
+
+* 属性
+| 属性 | 说明 | 示例 |
+|------+------+------|
+| WORDS / 字数 | 已写字数 | =12000= =1.2万= |
+| DURATION / 时长 | 投入时长 | =3h20m= |
+| CHAPTERS | 章节数 | =5= |
+| LAST | 最近动笔 | =2026-09-15= |
+| REPO | 仓库/文稿链接 | URL |
+| TARGET | 目标字数 | =8万= |
+
+* 结构建议
+#+begin_example
+* 进行中
+* 构思 / 大纲
+* 修订中
+* 已发布 / 搁置
+#+end_example
+
+需要代填时：发作品名、状态、字数、时长、章节即可。

@@ -9,6 +9,8 @@ import { renderOverview } from "./modules/overview.js";
 import { renderPlaceholder } from "./modules/placeholder.js";
 import { initContextMenu } from "./context-menu.js";
 import { renderReading } from "./modules/reading.js";
+import { renderBooklist } from "./modules/booklist.js";
+import { renderWriting } from "./modules/writing.js";
 
 let cfg = null;
 let todosCache = [];
@@ -125,6 +127,31 @@ function openShortcut(id) {
       });
       break;
 
+
+
+    case "booklist":
+      openWindow("booklist", {
+        title: meta.title || "书单",
+        icon: meta.icon || "📚",
+        width: 640,
+        height: 560,
+        mount(body) {
+          renderBooklist(body);
+        },
+      });
+      break;
+
+    case "writing":
+      openWindow("writing", {
+        title: meta.title || "创作",
+        icon: meta.icon || "✎",
+        width: 640,
+        height: 560,
+        mount(body) {
+          renderWriting(body);
+        },
+      });
+      break;
 
     case "reading":
       openWindow("reading", {

@@ -10,6 +10,8 @@ const DEFAULTS = [
   { id: "nav", icon: "⧉", title: "导航" },
   { id: "stack", icon: "⊞", title: "软件账号" },
   { id: "reading", icon: "📖", title: "读书" },
+  { id: "booklist", icon: "📚", title: "书单" },
+  { id: "writing", icon: "✎", title: "创作" },
   { id: "stickers", icon: "🖼", title: "贴图" },
   { id: "run", icon: "▷", title: "运行" },
 ];
