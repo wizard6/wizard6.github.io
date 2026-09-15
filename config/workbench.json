@@ -1,38 +1,132 @@
 {
   "title": "云端工作台",
-  "subtitle": "待办 · 状态 · 模板 · 导航 · 账号",
+  "subtitle": "入口模块 + 待办 · 状态 · 模板 · 导航 · 账号",
   "status": {
     "online": true,
     "label": "云端在线",
     "focus": "AI 辅助内容创作：2D 小游戏主线 / 小说副线",
     "mood": "可开工",
-    "note": "首页五块：待办、当前状态、模板、导航、软件与账号一览"
+    "note": "保留原工作区卡片，并新增五块核心功能"
   },
   "todos": [
-    { "id": "t1", "text": "推进 2D 小游戏最小可玩原型", "done": false, "tag": "主线" },
-    { "id": "t2", "text": "整理 forAi / Obsidian 本周卡片", "done": false, "tag": "知识库" },
-    { "id": "t3", "text": "小说副线：补 3 张角色/场景卡", "done": false, "tag": "副线" },
-    { "id": "t4", "text": "复查 GitHub 私有仓权限与 token 范围", "done": true, "tag": "工程" }
+    {
+      "id": "t1",
+      "text": "推进 2D 小游戏最小可玩原型",
+      "done": false,
+      "tag": "主线"
+    },
+    {
+      "id": "t2",
+      "text": "整理 forAi / Obsidian 本周卡片",
+      "done": false,
+      "tag": "知识库"
+    },
+    {
+      "id": "t3",
+      "text": "小说副线：补 3 张角色/场景卡",
+      "done": false,
+      "tag": "副线"
+    },
+    {
+      "id": "t4",
+      "text": "复查 GitHub 私有仓权限与 token 范围",
+      "done": true,
+      "tag": "工程"
+    }
   ],
   "templates": [
-    { "name": "PR 描述模板", "desc": "背景 / 改动 / 测试 / 风险", "url": "https://github.com/wizard6", "tag": "工程" },
-    { "name": "周焦点模板", "desc": "主线 · 副线 · 不做清单", "url": "https://github.com/wizard6/temp", "tag": "焦点" },
-    { "name": "AI 对话开场", "desc": "目标、约束、验收标准", "url": "https://github.com/wizard6/temp", "tag": "AI" },
-    { "name": "发行检查清单", "desc": "可玩 / 可分享 / 可回滚", "url": "https://github.com/wizard6", "tag": "游戏" }
+    {
+      "name": "PR 描述模板",
+      "desc": "背景 / 改动 / 测试 / 风险",
+      "url": "https://github.com/wizard6",
+      "tag": "工程"
+    },
+    {
+      "name": "周焦点模板",
+      "desc": "主线 · 副线 · 不做清单",
+      "url": "https://github.com/wizard6/temp",
+      "tag": "焦点"
+    },
+    {
+      "name": "AI 对话开场",
+      "desc": "目标、约束、验收标准",
+      "url": "https://github.com/wizard6/temp",
+      "tag": "AI"
+    },
+    {
+      "name": "发行检查清单",
+      "desc": "可玩 / 可分享 / 可回滚",
+      "url": "https://github.com/wizard6",
+      "tag": "游戏"
+    }
   ],
   "nav": [
-    { "name": "GitHub 主页", "url": "https://github.com/wizard6", "group": "代码" },
-    { "name": "本站仓库", "url": "https://github.com/wizard6/wizard6.github.io", "group": "代码" },
-    { "name": "知识库 temp", "url": "https://github.com/wizard6/temp", "group": "知识" },
-    { "name": "Obsidian 仓", "url": "https://github.com/wizard6/wiz_obsidian_vault", "group": "知识" },
-    { "name": "工作台源码", "url": "https://github.com/wizard6/wizard6.github.io/blob/master/index.html", "group": "本站" },
-    { "name": "配置文件", "url": "https://github.com/wizard6/wizard6.github.io/blob/master/config/workbench.json", "group": "本站" }
+    {
+      "name": "GitHub 主页",
+      "url": "https://github.com/wizard6",
+      "group": "代码"
+    },
+    {
+      "name": "本站仓库",
+      "url": "https://github.com/wizard6/wizard6.github.io",
+      "group": "代码"
+    },
+    {
+      "name": "知识库 temp",
+      "url": "https://github.com/wizard6/temp",
+      "group": "知识"
+    },
+    {
+      "name": "Obsidian 仓",
+      "url": "https://github.com/wizard6/wiz_obsidian_vault",
+      "group": "知识"
+    },
+    {
+      "name": "工作台源码",
+      "url": "https://github.com/wizard6/wizard6.github.io/blob/master/index.html",
+      "group": "本站"
+    },
+    {
+      "name": "配置文件",
+      "url": "https://github.com/wizard6/wizard6.github.io/blob/master/config/workbench.json",
+      "group": "本站"
+    }
   ],
   "software": [
-    { "name": "Cursor", "kind": "软件", "account": "本地 / 当前登录", "use": "日常写代码与 Agent", "url": "https://cursor.com" },
-    { "name": "GitHub", "kind": "账号", "account": "wizard6", "use": "代码托管、Pages、PR", "url": "https://github.com/wizard6" },
-    { "name": "Obsidian", "kind": "软件", "account": "本地库", "use": "知识库与卡片", "url": "https://obsidian.md" },
-    { "name": "Grok Bot", "kind": "软件", "account": "wizard 助手", "use": "云端协助与自动化", "url": "" },
-    { "name": "GitLab", "kind": "账号", "account": "已装插件待登录", "use": "备用代码托管", "url": "" }
+    {
+      "name": "Cursor",
+      "kind": "软件",
+      "account": "本地 / 当前登录",
+      "use": "日常写代码与 Agent",
+      "url": "https://cursor.com"
+    },
+    {
+      "name": "GitHub",
+      "kind": "账号",
+      "account": "wizard6",
+      "use": "代码托管、Pages、PR",
+      "url": "https://github.com/wizard6"
+    },
+    {
+      "name": "Obsidian",
+      "kind": "软件",
+      "account": "本地库",
+      "use": "知识库与卡片",
+      "url": "https://obsidian.md"
+    },
+    {
+      "name": "Grok Bot",
+      "kind": "软件",
+      "account": "wizard 助手",
+      "use": "云端协助与自动化",
+      "url": ""
+    },
+    {
+      "name": "GitLab",
+      "kind": "账号",
+      "account": "已装插件待登录",
+      "use": "备用代码托管",
+      "url": ""
+    }
   ]
 }
