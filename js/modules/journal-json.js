@@ -27,6 +27,40 @@ function buildStats(entries) {
   return { byType, durationMin, recentDays, recentCount: recent.length, total: entries.length };
 }
 
+function typeClass(type) {
+  const t = String(type || "NOTE").toUpperCase();
+  const map = {
+    NOTE: "is-note",
+    WORK: "is-work",
+    LIFE: "is-life",
+    EVENT: "is-event",
+    TODO: "is-todo",
+    DONE: "is-done",
+  };
+  return map[t] || "is-note";
+}
+
+function cell(text, cls) {
+  const v = text == null || text === "" ? "—" : String(text);
+  return `<span class="jl-cell ${cls}" title="${esc(v)}">${esc(v)}</span>`;
+}
+
+function rowHtml(e) {
+  const type = (e.type || "NOTE").toUpperCase();
+  const tags = Array.isArray(e.tags) ? e.tags.join(",") : e.tags || "";
+  return `
+    <div class="jl-row ${typeClass(type)}" role="row">
+      ${cell(e.date || "—", "jl-date")}
+      ${cell(type, "jl-type")}
+      ${cell(e.title || "(无标题)", "jl-title")}
+      ${cell(tags || "—", "jl-tags")}
+      ${cell(e.duration || "—", "jl-dur")}
+      ${cell(e.mood || "—", "jl-mood")}
+      ${cell(e.project || "—", "jl-proj")}
+      ${cell(e.body || "—", "jl-body")}
+    </div>`;
+}
+
 /**
  * @param {HTMLElement} root
  */
@@ -36,9 +70,19 @@ export async function renderJournalJson(root) {
       <div class="json-log-bar">
         <span class="json-log-name">journal.json</span>
         <span class="json-log-badge">JSON</span>
-        <span class="json-log-hint">与 org 日志并存 · data/journal.json</span>
+        <span class="json-log-hint">单行固定列 · 超长省略 · data/journal.json</span>
       </div>
       <div class="json-log-stats" data-stats></div>
+      <div class="jl-head" role="row">
+        <span class="jl-cell jl-date">DATE</span>
+        <span class="jl-cell jl-type">TYPE</span>
+        <span class="jl-cell jl-title">TITLE</span>
+        <span class="jl-cell jl-tags">TAGS</span>
+        <span class="jl-cell jl-dur">DUR</span>
+        <span class="jl-cell jl-mood">MOOD</span>
+        <span class="jl-cell jl-proj">PROJECT</span>
+        <span class="jl-cell jl-body">BODY</span>
+      </div>
       <div class="json-log-list" data-list><p class="empty">Loading…</p></div>
       <div class="json-log-foot">
         <span data-ml>—</span>
@@ -57,7 +101,7 @@ export async function renderJournalJson(root) {
     const stats = buildStats(entries);
 
     const typeChips = Object.entries(stats.byType)
-      .map(([k, v]) => `<span class="json-chip"><b>${esc(k)}</b>${v}</span>`)
+      .map(([k, v]) => `<span class="json-chip ${typeClass(k)}"><b>${esc(k)}</b>${v}</span>`)
       .join("");
 
     statsEl.innerHTML = `
@@ -69,41 +113,19 @@ export async function renderJournalJson(root) {
 
     if (!entries.length) {
       listEl.innerHTML = `
-        <p class="empty">entries 为空。填写说明见 data/journal-json-guide.md</p>
-        <pre class="json-sample">{
-  "id": "2026-09-15-1",
-  "date": "2026-09-15",
-  "type": "NOTE",
-  "title": "标题",
-  "body": "正文",
-  "tags": [],
-  "duration": "25m"
-}</pre>`;
+        <p class="empty">entries 为空。说明见 data/journal-json-guide.md</p>
+        <div class="jl-row is-note jl-demo" role="row">
+          ${cell("2026-09-15", "jl-date")}
+          ${cell("NOTE", "jl-type")}
+          ${cell("示例标题（超长会被省略成省略号）", "jl-title")}
+          ${cell("工作,心情", "jl-tags")}
+          ${cell("25m", "jl-dur")}
+          ${cell("平静", "jl-mood")}
+          ${cell("许德拉", "jl-proj")}
+          ${cell("这是正文预览，一行显示，超出部分显示……", "jl-body")}
+        </div>`;
     } else {
-      listEl.innerHTML = entries
-        .map((e) => {
-          const tags = (e.tags || []).map((t) => `<span class="json-tag">${esc(t)}</span>`).join("");
-          const meta = [
-            e.date || "—",
-            e.duration ? `时长 ${e.duration}` : null,
-            e.mood ? `心情 ${e.mood}` : null,
-            e.project ? `项目 ${e.project}` : null,
-          ]
-            .filter(Boolean)
-            .map(esc)
-            .join(" · ");
-          return `
-            <article class="json-entry">
-              <header>
-                <span class="json-type">${esc(e.type || "NOTE")}</span>
-                <h3>${esc(e.title || "(无标题)")}</h3>
-              </header>
-              <div class="json-meta">${meta}</div>
-              ${tags ? `<div class="json-tags">${tags}</div>` : ""}
-              ${e.body ? `<p class="json-body">${esc(e.body)}</p>` : ""}
-            </article>`;
-        })
-        .join("");
+      listEl.innerHTML = entries.map(rowHtml).join("");
     }
 
     if (ml) {
