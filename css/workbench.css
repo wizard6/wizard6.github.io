@@ -396,6 +396,12 @@ html, body {
   scrollbar-width: thin;
   scrollbar-color: rgba(109,139,255,0.35) transparent;
 }
+/* Single scrollbar: filled panes own the scroll, window body does not */
+.win-body:has(.json-log),
+.win-body:has(.org-buffer) {
+  overflow: hidden;
+  padding: 0;
+}
 .win-body::-webkit-scrollbar { width: 8px; height: 8px; }
 .win-body::-webkit-scrollbar-thumb {
   background: rgba(109,139,255,0.32);
@@ -730,9 +736,9 @@ a.ov-card:hover {
 .org-buffer {
   display: flex;
   flex-direction: column;
-  min-height: 100%;
+  min-height: 0;
   height: 100%;
-  margin: -14px -16px -16px;
+  margin: 0;
   background: #0b0e14;
   font-family: "JetBrains Mono", "SF Mono", ui-monospace, Menlo, Consolas, "PingFang SC", monospace;
   font-size: 13px;
@@ -947,9 +953,10 @@ a.ov-card:hover {
 .json-log {
   display: flex;
   flex-direction: column;
-  min-height: 100%;
+  min-height: 0;
   height: 100%;
-  margin: -14px -16px -16px;
+  margin: 0;
+  overflow: hidden;
   background: #0b0e14;
   font-family: "JetBrains Mono", "SF Mono", ui-monospace, Menlo, Consolas, "PingFang SC", monospace;
   font-size: 12px;
@@ -1003,7 +1010,8 @@ a.ov-card:hover {
   gap: 0 10px;
   align-items: center;
   padding: 0 12px;
-  min-width: 720px;
+  width: 100%;
+  box-sizing: border-box;
 }
 .jl-head {
   flex: 0 0 auto;
@@ -1015,18 +1023,18 @@ a.ov-card:hover {
   letter-spacing: .08em;
   text-transform: uppercase;
   background: #0d111a;
-  position: sticky;
-  top: 0;
-  z-index: 2;
 }
 .json-log-list {
   flex: 1;
   min-height: 0;
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
   padding: 4px 0 12px;
   display: flex;
   flex-direction: column;
   gap: 2px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(109,139,255,0.35) transparent;
 }
 .jl-row {
   min-height: 28px;
@@ -1042,7 +1050,7 @@ a.ov-card:hover {
   margin: 4px 12px;
   padding-left: 10px;
   padding-right: 10px;
-  min-width: calc(720px - 24px);
+  width: auto;
 }
 .jl-cell {
   display: block;
