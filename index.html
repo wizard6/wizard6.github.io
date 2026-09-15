@@ -5,558 +5,577 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>wizard6 · bookshelf</title>
   <style>
+    /* Shelf inspired by petargyurov/virtual-bookshelf; flip by Nodlik/StPageFlip */
     :root {
-      color-scheme: dark;
-      --shelf: #3f2e22;
-      --wood: #5c4030;
+      --bg0: #12151c;
+      --bg1: #1b2230;
+      --wood1: #6b4426;
+      --wood2: #3d2414;
+      --paper: #f7f1e8;
+      --ink: #1c1917;
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
       min-height: 100vh;
-      font-family: "Iowan Old Style", Palatino, Georgia, serif;
-      color: #1c1917;
-      background:
-        radial-gradient(900px 480px at 50% 0%, #2a3348 0%, transparent 55%),
-        #0c0f16;
-      overflow-x: hidden;
-    }
-
-    h1.site {
-      margin: 1.6rem 0 0.4rem;
-      text-align: center;
+      font-family: "Iowan Old Style", Palatino, Georgia, "Songti SC", serif;
       color: #e7e5e4;
-      font-weight: 560;
-      letter-spacing: 0.22em;
-      font-size: 1.1rem;
+      background:
+        radial-gradient(1000px 520px at 50% -10%, #2a3550 0%, transparent 55%),
+        linear-gradient(180deg, var(--bg1), var(--bg0));
     }
-    .hint {
+    header {
+      padding: 2rem 1rem 0.5rem;
       text-align: center;
-      color: #a8a29e;
-      font-size: 0.82rem;
+    }
+    header h1 {
+      margin: 0;
+      font-size: clamp(1rem, 2.2vw, 1.25rem);
+      letter-spacing: 0.35em;
+      font-weight: 560;
+    }
+    header p {
+      margin: 0.6rem 0 0;
       font-family: system-ui, sans-serif;
-      margin-bottom: 1.2rem;
+      font-size: 0.85rem;
+      color: #a8a29e;
+    }
+    header a {
+      color: #93c5fd;
+      text-decoration: none;
     }
 
-    .shelf-wrap {
-      width: min(920px, 94vw);
-      margin: 0 auto 2rem;
-      perspective: 1200px;
+    .room {
+      width: min(980px, 94vw);
+      margin: 1.5rem auto 3rem;
     }
 
-    .shelf {
+    .shelf-unit {
       position: relative;
+      padding: 2.4rem 1.6rem 0;
+      background: linear-gradient(180deg, #4e3426 0%, #2b1a10 100%);
+      border-radius: 10px 10px 0 0;
+      box-shadow:
+        inset 0 18px 40px rgba(0,0,0,0.35),
+        0 30px 60px rgba(0,0,0,0.45);
+    }
+    .shelf-plank {
+      height: 18px;
+      margin: 0 -0.4rem;
+      background: linear-gradient(180deg, #8b5e3c, #5a3a24 55%, #3b2416);
+      border-radius: 0 0 6px 6px;
+      box-shadow: 0 10px 18px rgba(0,0,0,0.4);
+    }
+
+    .bookshelf {
       display: flex;
       align-items: flex-end;
       justify-content: center;
-      gap: 10px;
-      padding: 2.2rem 1.4rem 1.1rem;
-      background: linear-gradient(180deg, #4a3426, #2c1d15);
-      border-radius: 8px 8px 4px 4px;
-      box-shadow:
-        inset 0 12px 24px rgba(0,0,0,0.35),
-        0 22px 40px rgba(0,0,0,0.45);
-      min-height: 280px;
-    }
-    .shelf::after {
-      content: "";
-      position: absolute;
-      left: 0; right: 0; bottom: -14px;
-      height: 14px;
-      background: linear-gradient(180deg, #6b4a34, #3b271c);
-      border-radius: 0 0 6px 6px;
-      box-shadow: 0 10px 18px rgba(0,0,0,0.35);
+      flex-wrap: nowrap;
+      gap: 6px;
+      min-height: 300px;
+      padding: 0 0.5rem 0.4rem;
+      perspective: 900px;
     }
 
     .book {
-      --h: 210px;
-      --w: 34px;
-      --depth: 148px;
-      width: var(--w);
-      height: var(--h);
+      --bw: 46px;
+      --bh: 270px;
+      --bd: 170px;
+      width: var(--bw);
+      height: var(--bh);
       position: relative;
+      margin: 0 2px;
       transform-style: preserve-3d;
-      transform: rotateY(-8deg);
+      transform-origin: bottom left;
+      transform: translateZ(0) rotateY(0);
+      transition: transform 0.7s cubic-bezier(.2,.8,.2,1);
       cursor: pointer;
-      transition: transform 0.35s ease, translate 0.35s ease;
       flex: 0 0 auto;
     }
-    .book:hover {
-      transform: rotateY(-8deg) translateY(-10px);
+    .book:hover,
+    .book:focus-visible {
+      z-index: 5;
+      outline: none;
+      transform: rotateX(-22deg) rotateY(-38deg) rotateZ(-12deg) translateY(36px) translateX(-18px);
     }
-    .book .spine {
+
+    .side {
       position: absolute;
-      inset: 0;
-      width: var(--w);
-      overflow: hidden;
       border-radius: 2px;
-      box-shadow:
-        inset -3px 0 8px rgba(0,0,0,0.35),
-        inset 2px 0 4px rgba(255,255,255,0.15);
+      transform-origin: center left;
     }
-    .book .spine::before {
+
+    .spine {
+      width: var(--bw);
+      height: var(--bh);
+      left: 0; top: 0;
+      overflow: hidden;
+      transform: rotateY(0) translateZ(0);
+      box-shadow:
+        inset -4px 0 10px rgba(0,0,0,0.35),
+        inset 2px 0 5px rgba(255,255,255,0.18),
+        0 0 0 1px rgba(0,0,0,0.25);
+    }
+    .spine::before {
       content: "";
       position: absolute;
-      left: -60%; top: -80%;
-      width: 220%; height: 260%;
+      inset: -80% -70%;
       background: var(--pole);
-      animation: pole 9s linear infinite;
+      animation: pole 8s linear infinite;
     }
-    @keyframes pole { to { transform: translateY(56px); } }
-    .book .spine-title {
+    @keyframes pole { to { transform: translateY(54px); } }
+
+    .spine-title {
       position: absolute;
-      inset: 0;
+      inset: 10px 0 36px;
       display: grid;
       place-items: center;
       writing-mode: vertical-rl;
-      letter-spacing: 0.2em;
-      font-size: 0.68rem;
+      text-orientation: mixed;
+      letter-spacing: 0.22em;
+      font-size: 0.72rem;
       font-weight: 700;
-      color: #111;
+      color: #0f172a;
       text-shadow: 0 1px 0 rgba(255,255,255,0.35);
       mix-blend-mode: multiply;
-      pointer-events: none;
-      padding: 0.6rem 0;
+      z-index: 1;
     }
-    .book .cover-lite {
+    .spine-author {
       position: absolute;
-      top: 0; left: 0;
-      width: var(--depth);
-      height: var(--h);
-      transform: rotateY(90deg) translateZ(calc(var(--w) / 2));
-      transform-origin: left center;
-      background: var(--cover);
-      border-radius: 0 3px 3px 0;
-      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.06);
-      opacity: 0.95;
-      pointer-events: none;
+      bottom: 8px;
+      left: 0; right: 0;
+      text-align: center;
+      font-size: 0.58rem;
+      font-family: system-ui, sans-serif;
+      font-weight: 700;
+      color: rgba(15,23,42,0.75);
+      z-index: 1;
+      mix-blend-mode: multiply;
     }
 
-    /* ===== Reader overlay ===== */
-    .reader {
+    .top {
+      width: var(--bw);
+      height: var(--bd);
+      top: 0;
+      background: repeating-linear-gradient(
+        90deg,
+        #f8fafc 0 3px,
+        #d6d3d1 3px 4px
+      );
+      transform: rotateX(90deg) translateZ(calc(var(--bd) / 2)) translateY(calc(var(--bd) / -2));
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.08);
+    }
+
+    .cover {
+      width: var(--bd);
+      height: var(--bh);
+      left: var(--bw);
+      top: 0;
+      background: var(--cover);
+      transform: rotateY(90deg) translateZ(0);
+      box-shadow:
+        inset 0 0 0 1px rgba(0,0,0,0.08),
+        inset 12px 0 24px rgba(0,0,0,0.06);
+      display: grid;
+      place-items: center;
+      padding: 1rem;
+      text-align: center;
+      color: var(--ink);
+    }
+    .cover strong {
+      font-size: 1.05rem;
+      letter-spacing: 0.12em;
+    }
+    .cover span {
+      display: block;
+      margin-top: 0.7rem;
+      font-size: 0.68rem;
+      opacity: 0.55;
+      font-family: system-ui, sans-serif;
+      letter-spacing: 0.08em;
+    }
+
+    /* ===== Reader / StPageFlip ===== */
+    .overlay {
       position: fixed;
       inset: 0;
-      background: rgba(6, 8, 14, 0.72);
-      backdrop-filter: blur(6px);
+      background: rgba(8,10,16,0.78);
+      backdrop-filter: blur(8px);
       display: none;
-      place-items: center;
-      z-index: 20;
+      z-index: 40;
       padding: 1rem;
     }
-    .reader.open { display: grid; }
+    .overlay.open { display: grid; place-items: center; }
 
-    .reader-panel {
-      width: min(860px, 96vw);
+    .reader {
+      width: min(920px, 96vw);
       display: grid;
       gap: 0.9rem;
       justify-items: center;
     }
-
-    .close-btn, .nav-btn {
+    .reader-bar {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+      color: #e7e5e4;
+      font-family: system-ui, sans-serif;
+    }
+    .reader-bar h2 {
+      margin: 0;
+      font-family: Georgia, "Songti SC", serif;
+      font-size: 1.05rem;
+      letter-spacing: 0.08em;
+      font-weight: 560;
+    }
+    .btn {
       appearance: none;
       border: 0;
       border-radius: 999px;
       padding: 0.55rem 1rem;
       font: 600 0.85rem system-ui, sans-serif;
       cursor: pointer;
-      background: #e7e5e4;
+      background: #f5f5f4;
       color: #1c1917;
     }
-    .close-btn { position: absolute; top: 1rem; right: 1rem; }
-    .nav {
-      display: flex;
-      gap: 0.6rem;
-      align-items: center;
-      color: #d6d3d1;
-      font-family: system-ui, sans-serif;
-      font-size: 0.85rem;
+    .btn.ghost {
+      background: transparent;
+      color: #e7e5e4;
+      border: 1px solid rgba(231,229,228,0.35);
     }
-    .nav-btn:disabled { opacity: 0.4; cursor: default; }
+    .btn:disabled { opacity: 0.4; cursor: default; }
 
-    .flipbook {
-      width: min(720px, 92vw);
-      height: min(440px, 62vh);
-      position: relative;
-      perspective: 2000px;
-      transform-style: preserve-3d;
+    #bookRoot {
+      margin: 0 auto;
+      box-shadow: 0 28px 60px rgba(0,0,0,0.5);
     }
-
-    .spread {
-      position: absolute;
-      inset: 0;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      transform-style: preserve-3d;
-      border-radius: 4px;
-      box-shadow: 0 24px 50px rgba(0,0,0,0.45);
-    }
-
     .page {
-      background: #faf7f2;
-      position: relative;
-      overflow: hidden;
-      padding: 1.4rem 1.5rem;
-      color: #292524;
+      background: var(--paper);
+      color: var(--ink);
+      border: 1px solid #e7e0d4;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      padding: 1.6rem 1.7rem;
+      font-size: 0.98rem;
+      line-height: 1.7;
     }
-    .page.left {
-      border-radius: 4px 0 0 4px;
-      box-shadow: inset -8px 0 16px rgba(0,0,0,0.06);
-      background:
-        linear-gradient(90deg, #efe8dc, #faf7f2 18%);
+    .page.hard {
+      background: var(--hard-bg, #fff7ed);
     }
-    .page.right {
-      border-radius: 0 4px 4px 0;
-      transform-origin: left center;
-      transform-style: preserve-3d;
-      background:
-        linear-gradient(270deg, #efe8dc, #faf7f2 18%);
-      box-shadow: inset 8px 0 16px rgba(0,0,0,0.05);
-    }
-    .page.right.flipping {
-      animation: flipfwd 0.7s ease forwards;
-      z-index: 3;
-    }
-    .page.right.flipping-back {
-      animation: flipback 0.7s ease forwards;
-      z-index: 3;
-    }
-    @keyframes flipfwd {
-      0% { transform: rotateY(0deg); }
-      100% { transform: rotateY(-180deg); }
-    }
-    @keyframes flipback {
-      0% { transform: rotateY(-180deg); }
-      100% { transform: rotateY(0deg); }
-    }
-
-    .page h2 {
-      margin: 0 0 0.7rem;
+    .page h3 {
+      margin: 0 0 0.8rem;
       font-size: 1.15rem;
       letter-spacing: 0.04em;
     }
-    .page p {
-      margin: 0 0 0.7rem;
-      line-height: 1.65;
-      font-size: 0.95rem;
-    }
-    .page .num {
-      position: absolute;
-      bottom: 0.7rem;
+    .page p { margin: 0 0 0.75rem; }
+    .page .footer-num {
+      margin-top: auto;
       font-size: 0.75rem;
       opacity: 0.45;
       font-family: system-ui, sans-serif;
+      text-align: right;
     }
-    .page.left .num { left: 1rem; }
-    .page.right .num { right: 1rem; }
-
-    .cover-card {
-      width: min(280px, 70vw);
-      height: min(400px, 56vh);
-      border-radius: 4px 8px 8px 4px;
-      background: var(--cover, #f5f0e8);
-      box-shadow: 0 22px 40px rgba(0,0,0,0.4);
-      display: none;
+    .cover-page {
+      display: grid;
       place-items: center;
       text-align: center;
-      padding: 1.5rem;
-      position: relative;
+      background: var(--hard-bg, #fff7ed) !important;
     }
-    .cover-card.show { display: grid; }
-    .cover-card::before {
-      content: "";
-      position: absolute;
-      left: 0; top: 0; bottom: 0;
-      width: 14px;
-      background: var(--pole);
-      border-radius: 4px 0 0 4px;
-    }
-    .cover-card h2 {
+    .cover-page .big {
+      font-size: clamp(1.4rem, 3vw, 2rem);
+      letter-spacing: 0.18em;
       margin: 0;
-      font-size: 1.6rem;
-      letter-spacing: 0.12em;
     }
-    .cover-card p {
-      margin: 1rem 0 0;
-      opacity: 0.65;
+    .cover-page .sub {
+      margin-top: 1rem;
       font-family: system-ui, sans-serif;
       font-size: 0.85rem;
+      opacity: 0.6;
+      letter-spacing: 0.08em;
     }
-    .open-book-btn {
-      margin-top: 1.4rem;
-      appearance: none;
-      border: 0;
+    .pole-strip {
+      width: 56px;
+      height: 8px;
+      margin: 1.2rem auto 0;
       border-radius: 999px;
-      padding: 0.65rem 1.2rem;
-      font: 600 0.9rem system-ui, sans-serif;
-      cursor: pointer;
-      background: #1c1917;
-      color: #fafaf9;
+      background: var(--pole-mini);
     }
 
-    .flipbook.hidden { display: none; }
+    .credits {
+      text-align: center;
+      font-family: system-ui, sans-serif;
+      font-size: 0.72rem;
+      color: #78716c;
+      padding-bottom: 2rem;
+    }
+    .credits a { color: #93c5fd; }
   </style>
 </head>
 <body>
-  <h1 class="site">WIZARD SHELF</h1>
-  <p class="hint">点击书脊选书 · 打开后翻页</p>
+  <header>
+    <h1>WIZARD SHELF</h1>
+    <p>点击书脊打开 · 拖拽或点角翻页</p>
+  </header>
 
-  <div class="shelf-wrap">
-    <div class="shelf" id="shelf"></div>
-  </div>
-
-  <div class="reader" id="reader" aria-hidden="true">
-    <button class="close-btn" id="closeBtn" type="button">关闭</button>
-
-    <div class="reader-panel">
-      <div class="cover-card" id="coverCard">
-        <div>
-          <h2 id="coverTitle">书名</h2>
-          <p id="coverSub">浅色封面 · 彩色书脊</p>
-          <button class="open-book-btn" id="openBtn" type="button">打开翻页</button>
-        </div>
-      </div>
-
-      <div class="flipbook hidden" id="flipbook">
-        <div class="spread">
-          <div class="page left" id="pageLeft">
-            <h2></h2>
-            <div class="body"></div>
-            <span class="num"></span>
-          </div>
-          <div class="page right" id="pageRight">
-            <h2></h2>
-            <div class="body"></div>
-            <span class="num"></span>
-          </div>
-        </div>
-      </div>
-
-      <div class="nav" id="nav" hidden>
-        <button class="nav-btn" id="prevBtn" type="button">上一页</button>
-        <span id="pageIndicator">1 / 1</span>
-        <button class="nav-btn" id="nextBtn" type="button">下一页</button>
-      </div>
+  <div class="room">
+    <div class="shelf-unit">
+      <div class="bookshelf" id="shelf" aria-label="书架"></div>
+      <div class="shelf-plank" aria-hidden="true"></div>
     </div>
   </div>
 
+  <p class="credits">
+    书架结构参考
+    <a href="https://github.com/petargyurov/virtual-bookshelf" target="_blank" rel="noreferrer">virtual-bookshelf</a>
+    · 翻页使用
+    <a href="https://github.com/Nodlik/StPageFlip" target="_blank" rel="noreferrer">StPageFlip</a>
+  </p>
+
+  <div class="overlay" id="overlay" aria-hidden="true">
+    <div class="reader">
+      <div class="reader-bar">
+        <h2 id="readerTitle">书名</h2>
+        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+          <button class="btn ghost" id="prevBtn" type="button">上一页</button>
+          <button class="btn ghost" id="nextBtn" type="button">下一页</button>
+          <button class="btn" id="closeBtn" type="button">关闭</button>
+        </div>
+      </div>
+      <div id="bookRoot"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.min.js"></script>
   <script>
     const BOOKS = [
       {
         title: "晨雾",
+        author: "WZ",
         pole: "repeating-linear-gradient(-32deg,#e11d48 0 14px,#fff 14px 26px,#2563eb 26px 40px,#fff 40px 52px)",
-        cover: "linear-gradient(160deg,#fff7ed,#ffedd5 55%,#fed7aa)",
+        poleMini: "linear-gradient(90deg,#e11d48,#fff,#2563eb,#fff,#e11d48)",
+        cover: "linear-gradient(165deg,#fffaf5,#ffe8d6 55%,#ffd7b8)",
+        hard: "#fff7ed",
+        h: 278, w: 44,
         pages: [
-          { h: "晨雾", t: "山脊还没醒透，雾先把山谷填满。脚步踩在湿草上，像踩在一层薄云上。" },
-          { h: "小路", t: "石阶被露水洗亮。远处有人挑着竹筐，轮廓在雾里一晃一晃。" },
-          { h: "茶摊", t: "摊主用粗瓷碗倒茶，热气一冲，雾里忽然开出一小块晴空。" },
-          { h: "回声", t: "你喊一声，山谷迟疑片刻才答。像它也在想，该不该把秘密交出来。" },
+          ["山脊", "山脊还没醒透，雾先把山谷填满。脚步踩在湿草上，像踩在一层薄云上。"],
+          ["石阶", "石阶被露水洗亮。远处有人挑着竹筐，轮廓在雾里一晃一晃。"],
+          ["茶摊", "摊主用粗瓷碗倒茶，热气一冲，雾里忽然开出一小块晴空。"],
+          ["回声", "你喊一声，山谷迟疑片刻才答。像它也在想，该不该把秘密交出来。"],
         ],
       },
       {
         title: "星图",
+        author: "WZ",
         pole: "repeating-linear-gradient(-28deg,#7c3aed 0 14px,#fef3c7 14px 26px,#06b6d4 26px 40px,#fef3c7 40px 52px)",
-        cover: "linear-gradient(160deg,#f8fafc,#e0f2fe 50%,#dbeafe)",
+        poleMini: "linear-gradient(90deg,#7c3aed,#fef3c7,#06b6d4,#fef3c7)",
+        cover: "linear-gradient(165deg,#f8fbff,#e8f4ff 50%,#d9ecff)",
+        hard: "#eff6ff",
+        h: 262, w: 48,
         pages: [
-          { h: "星图", t: "夜里把灯关掉，天花板变成深海。你开始给每一颗亮点命名。" },
-          { h: "航线", t: "有人说星座是古人的导航。你更愿意把它当成一封写得很慢的信。" },
-          { h: "流星", t: "一道白痕划过，短得像叹息。你还是许了愿，怕错过这次巧合。" },
-          { h: "黎明", t: "天边先灰后蓝。星图收起，世界又变回可触碰的尺寸。" },
+          ["命名", "夜里把灯关掉，天花板变成深海。你开始给每一颗亮点命名。"],
+          ["航线", "有人说星座是古人的导航。你更愿意把它当成一封写得很慢的信。"],
+          ["流星", "一道白痕划过，短得像叹息。你还是许了愿，怕错过这次巧合。"],
+          ["黎明", "天边先灰后蓝。星图收起，世界又变回可触碰的尺寸。"],
         ],
       },
       {
         title: "潮声",
+        author: "WZ",
         pole: "repeating-linear-gradient(-30deg,#0d9488 0 14px,#fff 14px 26px,#f97316 26px 40px,#fff 40px 52px)",
-        cover: "linear-gradient(160deg,#ecfeff,#cffafe 45%,#a5f3fc)",
+        poleMini: "linear-gradient(90deg,#0d9488,#fff,#f97316,#fff)",
+        cover: "linear-gradient(165deg,#f3fcfd,#d9f7f8 48%,#bfeff2)",
+        hard: "#ecfeff",
+        h: 286, w: 42,
         pages: [
-          { h: "潮声", t: "海不是安静的。它用同一种节奏说不同的话，听久了会听见自己的呼吸。" },
-          { h: "贝壳", t: "你捡起一枚，贴到耳边——其实听到的是血流通过的声音，偏要说是海。" },
-          { h: "渔火", t: "远处几点橙光随波起伏，像有人在夜里缝补被撕开的水平线。" },
-          { h: "退潮", t: "沙滩露出脚印和碎玻璃。世界暂时坦白，等下一潮再把秘密盖上。" },
+          ["节奏", "海不是安静的。它用同一种节奏说不同的话，听久了会听见自己的呼吸。"],
+          ["贝壳", "你捡起一枚，贴到耳边——其实听到的是血流通过的声音，偏要说是海。"],
+          ["渔火", "远处几点橙光随波起伏，像有人在夜里缝补被撕开的水平线。"],
+          ["退潮", "沙滩露出脚印和碎玻璃。世界暂时坦白，等下一潮再把秘密盖上。"],
         ],
       },
       {
         title: "窑火",
+        author: "WZ",
         pole: "repeating-linear-gradient(-34deg,#dc2626 0 14px,#fef9c3 14px 26px,#1d4ed8 26px 40px,#fef9c3 40px 52px)",
-        cover: "linear-gradient(160deg,#fffbeb,#fde68a 40%,#fcd34d)",
+        poleMini: "linear-gradient(90deg,#dc2626,#fef9c3,#1d4ed8,#fef9c3)",
+        cover: "linear-gradient(165deg,#fffdf5,#ffefb8 45%,#ffe08a)",
+        hard: "#fffbeb",
+        h: 254, w: 50,
         pages: [
-          { h: "窑火", t: "泥还软着，就被推进高温。成形往往发生在你看不见的地方。" },
-          { h: "开窑", t: "盖子揭开，热浪扑面。有的开裂，有的成釉——结果从不预告。" },
-          { h: "杯沿", t: "指尖摸到一圈细润。你忽然明白：耐心也会留下触感。" },
-          { h: "茶烟", t: "热水入杯，烟丝上升。窑火的故事被喝成一口温热的安静。" },
+          ["入窑", "泥还软着，就被推进高温。成形往往发生在你看不见的地方。"],
+          ["开窑", "盖子揭开，热浪扑面。有的开裂，有的成釉——结果从不预告。"],
+          ["杯沿", "指尖摸到一圈细润。你忽然明白：耐心也会留下触感。"],
+          ["茶烟", "热水入杯，烟丝上升。窑火的故事被喝成一口温热的安静。"],
         ],
       },
       {
         title: "竹简",
+        author: "WZ",
         pole: "repeating-linear-gradient(-26deg,#16a34a 0 14px,#fefce8 14px 26px,#ca8a04 26px 40px,#fefce8 40px 52px)",
-        cover: "linear-gradient(160deg,#f7fee7,#ecfccb 50%,#d9f99d)",
+        poleMini: "linear-gradient(90deg,#16a34a,#fefce8,#ca8a04,#fefce8)",
+        cover: "linear-gradient(165deg,#f7fee7,#e9f8c8 52%,#d4ef9a)",
+        hard: "#f7fee7",
+        h: 272, w: 46,
         pages: [
-          { h: "竹简", t: "字被刻进纤维里，比纸更扛得住时间，也更沉。" },
-          { h: "绳结", t: "一册册用麻绳串起。解开时，灰尘像很小的史官，先出来报到。" },
-          { h: "缺页", t: "中间断了一片。你用想象补全，反而读出比原文更活的意思。" },
-          { h: "传抄", t: "后人一笔一画誊写。错误也会繁殖，美也会——这就是流传。" },
+          ["刻痕", "字被刻进纤维里，比纸更扛得住时间，也更沉。"],
+          ["绳结", "一册册用麻绳串起。解开时，灰尘像很小的史官，先出来报到。"],
+          ["缺页", "中间断了一片。你用想象补全，反而读出比原文更活的意思。"],
+          ["传抄", "后人一笔一画誊写。错误也会繁殖，美也会——这就是流传。"],
         ],
       },
       {
         title: "夜航",
+        author: "WZ",
         pole: "repeating-linear-gradient(-31deg,#db2777 0 14px,#fafafa 14px 26px,#4f46e5 26px 40px,#fafafa 40px 52px)",
-        cover: "linear-gradient(160deg,#fdf2f8,#fce7f3 45%,#fbcfe8)",
+        poleMini: "linear-gradient(90deg,#db2777,#fafafa,#4f46e5,#fafafa)",
+        cover: "linear-gradient(165deg,#fff5fa,#ffe0ef 48%,#ffc8e3)",
+        hard: "#fdf2f8",
+        h: 268, w: 45,
         pages: [
-          { h: "夜航", t: "车厢灯一盏盏灭掉，只剩窗外流动的暗。城市变成一串疏星。" },
-          { h: "站名", t: "广播报站，声音发黏。你听不清，却知道离目的地又近了一点。" },
-          { h: "窗霜", t: "玻璃起雾，你用指尖画一条短线。线外是速度，线内是你。" },
-          { h: "到站", t: "门开，冷空气涌入。夜航结束，故事改在地面继续。" },
+          ["熄灯", "车厢灯一盏盏灭掉，只剩窗外流动的暗。城市变成一串疏星。"],
+          ["站名", "广播报站，声音发黏。你听不清，却知道离目的地又近了一点。"],
+          ["窗霜", "玻璃起雾，你用指尖画一条短线。线外是速度，线内是你。"],
+          ["到站", "门开，冷空气涌入。夜航结束，故事改在地面继续。"],
         ],
       },
     ];
 
     const shelf = document.getElementById("shelf");
-    const reader = document.getElementById("reader");
-    const coverCard = document.getElementById("coverCard");
-    const flipbook = document.getElementById("flipbook");
-    const nav = document.getElementById("nav");
-    const pageLeft = document.getElementById("pageLeft");
-    const pageRight = document.getElementById("pageRight");
-    const pageIndicator = document.getElementById("pageIndicator");
-    const prevBtn = document.getElementById("prevBtn");
-    const nextBtn = document.getElementById("nextBtn");
-
-    let current = null;
-    let spreadIndex = 0; // each spread = 2 pages
-    let flipping = false;
-
-    function poleStyle(book) {
-      return book.pole;
-    }
+    const overlay = document.getElementById("overlay");
+    const bookRoot = document.getElementById("bookRoot");
+    const readerTitle = document.getElementById("readerTitle");
+    let pageFlip = null;
 
     BOOKS.forEach((b, i) => {
-      const el = document.createElement("div");
+      const el = document.createElement("button");
+      el.type = "button";
       el.className = "book";
+      el.style.setProperty("--bw", b.w + "px");
+      el.style.setProperty("--bh", b.h + "px");
       el.style.setProperty("--pole", b.pole);
       el.style.setProperty("--cover", b.cover);
-      el.style.setProperty("--h", `${200 + (i % 3) * 12}px`);
-      el.style.setProperty("--w", `${30 + (i % 2) * 4}px`);
+      el.setAttribute("aria-label", "打开《" + b.title + "》");
       el.innerHTML = `
-        <div class="spine"><span class="spine-title">${b.title}</span></div>
-        <div class="cover-lite" aria-hidden="true"></div>
+        <div class="side spine">
+          <span class="spine-title">${b.title}</span>
+          <span class="spine-author">${b.author}</span>
+        </div>
+        <div class="side top" aria-hidden="true"></div>
+        <div class="side cover">
+          <div>
+            <strong>${b.title}</strong>
+            <span>LIGHT COVER</span>
+          </div>
+        </div>
       `;
-      el.title = b.title;
-      el.addEventListener("click", () => selectBook(i));
+      el.addEventListener("click", () => openBook(i));
       shelf.appendChild(el);
     });
 
-    function selectBook(i) {
-      current = BOOKS[i];
-      spreadIndex = 0;
-      reader.classList.add("open");
-      reader.setAttribute("aria-hidden", "false");
-      coverCard.classList.add("show");
-      coverCard.style.setProperty("--cover", current.cover);
-      coverCard.style.setProperty("--pole", current.pole);
-      document.getElementById("coverTitle").textContent = current.title;
-      flipbook.classList.add("hidden");
-      nav.hidden = true;
-    }
-
-    function openPages() {
-      coverCard.classList.remove("show");
-      flipbook.classList.remove("hidden");
-      nav.hidden = false;
-      renderSpread(false);
-    }
-
-    function renderSpread(animateDir) {
-      const pages = current.pages;
-      const leftIdx = spreadIndex * 2;
-      const rightIdx = leftIdx + 1;
-      const L = pages[leftIdx];
-      const R = pages[rightIdx];
-
-      const fill = (el, page, n) => {
-        el.querySelector("h2").textContent = page ? page.h : "";
-        el.querySelector(".body").innerHTML = page ? `<p>${page.t}</p>` : "";
-        el.querySelector(".num").textContent = page ? String(n) : "";
-      };
-
-      if (!animateDir) {
-        fill(pageLeft, L, leftIdx + 1);
-        fill(pageRight, R, rightIdx + 1);
+    function buildPages(book) {
+      const html = [];
+      html.push(`
+        <div class="page hard cover-page" data-density="hard" style="--hard-bg:${book.hard};--pole-mini:${book.poleMini}">
+          <div>
+            <h3 class="big">${book.title}</h3>
+            <div class="pole-strip"></div>
+            <p class="sub">浅色封面 · 彩色书脊</p>
+          </div>
+        </div>
+      `);
+      book.pages.forEach((pair, idx) => {
+        html.push(`
+          <div class="page">
+            <h3>${pair[0]}</h3>
+            <p>${pair[1]}</p>
+            <div class="footer-num">${idx + 1}</div>
+          </div>
+        `);
+      });
+      // pad to even count for nicer spreads (cover + pages)
+      const total = 1 + book.pages.length;
+      if (total % 2 === 1) {
+        html.push(`<div class="page"><h3></h3><p></p></div>`);
       }
-
-      const totalSpreads = Math.ceil(pages.length / 2);
-      pageIndicator.textContent = `${spreadIndex + 1} / ${totalSpreads}`;
-      prevBtn.disabled = spreadIndex <= 0 || flipping;
-      nextBtn.disabled = spreadIndex >= totalSpreads - 1 || flipping;
+      html.push(`
+        <div class="page hard cover-page" data-density="hard" style="--hard-bg:${book.hard}">
+          <div>
+            <h3 class="big">${book.title}</h3>
+            <p class="sub">— end —</p>
+          </div>
+        </div>
+      `);
+      return html.join("");
     }
 
-    function flip(dir) {
-      if (flipping || !current) return;
-      const totalSpreads = Math.ceil(current.pages.length / 2);
-      if (dir === 1 && spreadIndex >= totalSpreads - 1) return;
-      if (dir === -1 && spreadIndex <= 0) return;
-
-      flipping = true;
-      prevBtn.disabled = true;
-      nextBtn.disabled = true;
-
-      const pages = current.pages;
-      if (dir === 1) {
-        // show current, animate right page away, then show next spread
-        pageRight.classList.remove("flipping-back");
-        pageRight.classList.add("flipping");
-        pageRight.addEventListener("animationend", function handler() {
-          pageRight.removeEventListener("animationend", handler);
-          pageRight.classList.remove("flipping");
-          spreadIndex += 1;
-          const leftIdx = spreadIndex * 2;
-          fillNow(leftIdx);
-          flipping = false;
-          renderSpread(false);
-        }, { once: true });
-      } else {
-        spreadIndex -= 1;
-        const leftIdx = spreadIndex * 2;
-        fillNow(leftIdx);
-        pageRight.classList.remove("flipping");
-        pageRight.classList.add("flipping-back");
-        pageRight.addEventListener("animationend", function handler() {
-          pageRight.removeEventListener("animationend", handler);
-          pageRight.classList.remove("flipping-back");
-          flipping = false;
-          renderSpread(false);
-        }, { once: true });
+    function openBook(index) {
+      const book = BOOKS[index];
+      readerTitle.textContent = book.title;
+      if (pageFlip) {
+        try { pageFlip.destroy(); } catch (_) {}
+        pageFlip = null;
       }
+      bookRoot.innerHTML = "";
+      const host = document.createElement("div");
+      host.className = "flipbook-host";
+      host.innerHTML = buildPages(book);
+      bookRoot.appendChild(host);
+
+      const width = Math.min(420, Math.floor(window.innerWidth * 0.42));
+      const height = Math.min(560, Math.floor(window.innerHeight * 0.72));
+
+      pageFlip = new St.PageFlip(host, {
+        width,
+        height,
+        size: "stretch",
+        minWidth: 280,
+        maxWidth: 520,
+        minHeight: 380,
+        maxHeight: 680,
+        drawShadow: true,
+        flippingTime: 850,
+        usePortrait: true,
+        startZIndex: 5,
+        autoSize: true,
+        maxShadowOpacity: 0.45,
+        showCover: true,
+        mobileScrollSupport: true,
+        clickEventForward: true,
+        useMouseEvents: true,
+        swipeDistance: 30,
+        showPageCorners: true,
+        disableFlipByClick: false,
+      });
+      pageFlip.loadFromHTML(host.querySelectorAll(".page"));
+
+      overlay.classList.add("open");
+      overlay.setAttribute("aria-hidden", "false");
+      document.getElementById("prevBtn").onclick = () => pageFlip.flipPrev();
+      document.getElementById("nextBtn").onclick = () => pageFlip.flipNext();
     }
 
-    function fillNow(leftIdx) {
-      const pages = current.pages;
-      const L = pages[leftIdx];
-      const R = pages[leftIdx + 1];
-      pageLeft.querySelector("h2").textContent = L ? L.h : "";
-      pageLeft.querySelector(".body").innerHTML = L ? `<p>${L.t}</p>` : "";
-      pageLeft.querySelector(".num").textContent = L ? String(leftIdx + 1) : "";
-      pageRight.querySelector("h2").textContent = R ? R.h : "";
-      pageRight.querySelector(".body").innerHTML = R ? `<p>${R.t}</p>` : "";
-      pageRight.querySelector(".num").textContent = R ? String(leftIdx + 2) : "";
+    function closeReader() {
+      overlay.classList.remove("open");
+      overlay.setAttribute("aria-hidden", "true");
+      if (pageFlip) {
+        try { pageFlip.destroy(); } catch (_) {}
+        pageFlip = null;
+      }
+      bookRoot.innerHTML = "";
     }
 
-    document.getElementById("openBtn").addEventListener("click", openPages);
-    document.getElementById("closeBtn").addEventListener("click", () => {
-      reader.classList.remove("open");
-      reader.setAttribute("aria-hidden", "true");
-      current = null;
-      flipping = false;
-      pageRight.classList.remove("flipping", "flipping-back");
+    document.getElementById("closeBtn").addEventListener("click", closeReader);
+    overlay.addEventListener("click", (e) => {
+      if (e.target === overlay) closeReader();
     });
-    prevBtn.addEventListener("click", () => flip(-1));
-    nextBtn.addEventListener("click", () => flip(1));
-    pageRight.addEventListener("click", () => flip(1));
-    pageLeft.addEventListener("click", () => flip(-1));
-
     window.addEventListener("keydown", (e) => {
-      if (!reader.classList.contains("open")) return;
-      if (e.key === "Escape") document.getElementById("closeBtn").click();
-      if (e.key === "ArrowRight") flip(1);
-      if (e.key === "ArrowLeft") flip(-1);
+      if (!overlay.classList.contains("open")) return;
+      if (e.key === "Escape") closeReader();
+      if (e.key === "ArrowRight") pageFlip?.flipNext();
+      if (e.key === "ArrowLeft") pageFlip?.flipPrev();
     });
   </script>
 </body>
