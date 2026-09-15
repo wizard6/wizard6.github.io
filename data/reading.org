@@ -3,12 +3,17 @@
 
 * 概览
 本文件由轻量 org-mode 引擎渲染。改 data/reading.org 即可更新统计。
+条目用 PROPERTIES 记录字数与时长：
+- :WORDS: 字数（阿拉伯数字，或 1.2万）
+- :DURATION: 时长（分钟数，或 1h30m / 90m）
 
 * 在读 :读书:
 ** READING 深入理解计算机系统 :经典:CS:
 :PROPERTIES:
 :LAST: 2026-09-14
 :PROGRESS: 42%
+:WORDS: 18600
+:DURATION: 5h20m
 :END:
 - 本周读到第 3 章
 - 重点：链接、异常控制流
@@ -16,20 +21,50 @@
 ** READING 游戏编程模式 :游戏:
 :PROPERTIES:
 :LAST: 2026-09-12
+:WORDS: 9200
+:DURATION: 3h10m
 :END:
 做 2D 小游戏主线时对照翻阅。
 
 * 想读 :书单:
 ** TODO 设计数据密集型应用 :架构:
+:PROPERTIES:
+:WORDS: 0
+:DURATION: 0m
+:END:
 ** TODO 故事 :写作:小说:
+:PROPERTIES:
+:WORDS: 0
+:DURATION: 0m
+:END:
 ** NEXT 代码大全 :工程:
+:PROPERTIES:
+:WORDS: 2400
+:DURATION: 55m
+:END:
 
 * 已读 :归档:
 ** DONE 黑客与画家 <2026-08-20> :随笔:
+:PROPERTIES:
+:WORDS: 71200
+:DURATION: 8h45m
+:CLOSED: 2026-08-20
+:END:
 读后感：保持独立思考，小而美产品。
 
 ** DONE 软技能：代码之外的生存指南 <2026-07-03> :职业:
+:PROPERTIES:
+:WORDS: 95800
+:DURATION: 11h20m
+:CLOSED: 2026-07-03
+:END:
+
 ** DONE 人类简史 <2026-05-18> :历史:
+:PROPERTIES:
+:WORDS: 168000
+:DURATION: 18h
+:CLOSED: 2026-05-18
+:END:
 
 * 笔记摘录
 ** 深入理解计算机系统

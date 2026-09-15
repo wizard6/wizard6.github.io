@@ -399,6 +399,62 @@ function extractTimestamp(text) {
   return m ? m[1] : null;
 }
 
+function propsOf(headline) {
+  const out = {};
+  for (const c of headline.children || []) {
+    if (c.type === "props") Object.assign(out, c.entries || {});
+  }
+  return out;
+}
+
+/** Parse :WORDS: / :字数: — supports 12000 or 1.2万 */
+export function parseWords(raw) {
+  if (raw == null || raw === "") return 0;
+  const s = String(raw).trim().replace(/,/g, "");
+  if (!s || s === "0") return 0;
+  const wan = s.match(/^(\d+(?:\.\d+)?)\s*万$/);
+  if (wan) return Math.round(parseFloat(wan[1]) * 10000);
+  const n = parseFloat(s);
+  return Number.isFinite(n) ? Math.round(n) : 0;
+}
+
+/** Parse :DURATION: / :时长: — minutes; supports 90, 90m, 1h30m, 1:30 */
+export function parseDurationMinutes(raw) {
+  if (raw == null || raw === "") return 0;
+  const s = String(raw).trim().toLowerCase();
+  if (!s || s === "0" || s === "0m") return 0;
+  const hm = s.match(/^(?:(\d+)\s*h)?\s*(?:(\d+)\s*m)?$/i);
+  if (hm && (hm[1] || hm[2]) && !s.includes(":")) {
+    return (parseInt(hm[1] || "0", 10) * 60) + parseInt(hm[2] || "0", 10);
+  }
+  const colon = s.match(/^(\d+):(\d{1,2})$/);
+  if (colon) return parseInt(colon[1], 10) * 60 + parseInt(colon[2], 10);
+  const onlyMin = s.match(/^(\d+(?:\.\d+)?)\s*m(?:in(?:ute)?s?)?$/);
+  if (onlyMin) return Math.round(parseFloat(onlyMin[1]));
+  const onlyH = s.match(/^(\d+(?:\.\d+)?)\s*h(?:ours?)?$/);
+  if (onlyH) return Math.round(parseFloat(onlyH[1]) * 60);
+  const n = parseFloat(s);
+  return Number.isFinite(n) ? Math.round(n) : 0;
+}
+
+export function formatDuration(mins) {
+  const m = Math.max(0, Math.round(mins || 0));
+  const h = Math.floor(m / 60);
+  const r = m % 60;
+  if (h <= 0) return r + "m";
+  if (r === 0) return h + "h";
+  return h + "h" + r + "m";
+}
+
+export function formatWords(n) {
+  const v = Math.max(0, Math.round(n || 0));
+  if (v >= 10000) {
+    const wan = v / 10000;
+    return (Number.isInteger(wan) ? String(wan) : wan.toFixed(1).replace(/\.0$/, "")) + "万";
+  }
+  return String(v);
+}
+
 /**
  * Reading-oriented stats from org doc.
  * @param {Doc} doc
@@ -413,21 +469,15 @@ export function orgReadingStats(doc) {
       byTodo[h.todo] = (byTodo[h.todo] || 0) + 1;
     }
     const tags = h.tags || [];
-    const isBook =
-      tags.some((t) => /书|读书|reading|book/i.test(t)) ||
-      !!h.todo ||
-      h.level === 2;
-    // Prefer entries that look like books: have TODO keyword or book-ish tag, or sit under reading section
     if (h.todo || tags.some((t) => /书|读书|reading|book/i.test(t))) {
+      const props = propsOf(h);
       const date =
         extractTimestamp(h.title) ||
         extractTimestamp(h.children?.map((c) => (c.type === "paragraph" ? c.text : "")).join("\n")) ||
-        (h.children || [])
-          .filter((c) => c.type === "props")
-          .map((c) => c.entries.LAST || c.entries.CLOSED || c.entries.DATE)
-          .map(extractTimestamp)
-          .find(Boolean) ||
+        extractTimestamp(props.LAST || props.CLOSED || props.DATE) ||
         null;
+      const words = parseWords(props.WORDS ?? props["字数"] ?? props.WORD_COUNT);
+      const durationMin = parseDurationMinutes(props.DURATION ?? props["时长"] ?? props.TIME);
       books.push({
         title: h.title,
         todo: h.todo || "NOTE",
@@ -435,6 +485,9 @@ export function orgReadingStats(doc) {
         date,
         level: h.level,
         done: h.todo ? DONE_WORDS.has(h.todo) : false,
+        words,
+        durationMin,
+        props,
       });
     }
   }
@@ -447,14 +500,32 @@ export function orgReadingStats(doc) {
   const cutoffStr = cutoff.toISOString().slice(0, 10);
   const recent = books.filter((b) => b.date && b.date >= cutoffStr);
 
+  const totalWords = books.reduce((s, b) => s + (b.words || 0), 0);
+  const totalDurationMin = books.reduce((s, b) => s + (b.durationMin || 0), 0);
+  const recentWords = recent.reduce((s, b) => s + (b.words || 0), 0);
+  const recentDurationMin = recent.reduce((s, b) => s + (b.durationMin || 0), 0);
+  const doneWords = books.filter((b) => b.done).reduce((s, b) => s + (b.words || 0), 0);
+  const doneDurationMin = books.filter((b) => b.done).reduce((s, b) => s + (b.durationMin || 0), 0);
+  const readingBooks = books.filter((b) => b.todo === "READING" || b.todo === "NEXT");
+  const readingWords = readingBooks.reduce((s, b) => s + (b.words || 0), 0);
+  const readingDurationMin = readingBooks.reduce((s, b) => s + (b.durationMin || 0), 0);
+
   return {
     totalTracked: books.length,
     byTodo,
-    reading: books.filter((b) => b.todo === "READING" || b.todo === "NEXT").length,
+    reading: readingBooks.length,
     done: books.filter((b) => b.done).length,
     recent,
     books,
     recentDays,
+    totalWords,
+    totalDurationMin,
+    recentWords,
+    recentDurationMin,
+    doneWords,
+    doneDurationMin,
+    readingWords,
+    readingDurationMin,
   };
 }
 

@@ -1,4 +1,10 @@
-import { parseOrg, renderOrg, orgReadingStats } from "../org/engine.js";
+import {
+  parseOrg,
+  renderOrg,
+  orgReadingStats,
+  formatDuration,
+  formatWords,
+} from "../org/engine.js";
 
 async function loadReadingOrg() {
   const res = await fetch("./data/reading.org?v=" + Date.now());
@@ -6,18 +12,27 @@ async function loadReadingOrg() {
   return res.text();
 }
 
-/** Build an org-mode preamble for stats (also rendered by the org engine). */
 function statsAsOrg(stats) {
   const todoLines = Object.entries(stats.byTodo)
     .map(([k, v]) => `- ${k} :: ${v}`)
     .join("\n");
+
   const recent = (stats.recent.length ? stats.recent : stats.books.slice(0, 8))
     .slice(0, 8)
     .map((b) => {
       const ts = b.date ? ` <${b.date}>` : "";
       const tags = b.tags?.length ? ` :${b.tags.join(":")}:` : "";
-      return `** ${b.todo} ${b.title}${ts}${tags}`;
+      const metaLine =
+        `\n:PROPERTIES:\n:WORDS: ${b.words || 0}\n:DURATION: ${formatDuration(b.durationMin || 0)}\n:END:`;
+      return `** ${b.todo} ${b.title}${ts}${tags}${metaLine}`;
     })
+    .join("\n");
+
+  const byBook = stats.books
+    .filter((b) => b.words || b.durationMin)
+    .sort((a, b) => (b.words || 0) - (a.words || 0))
+    .slice(0, 12)
+    .map((b) => `- ${b.title} :: 字数 ${formatWords(b.words)} · 时长 ${formatDuration(b.durationMin)}`)
     .join("\n");
 
   return `* 统计 :stats:
@@ -27,8 +42,26 @@ function statsAsOrg(stats) {
 :DONE: ${stats.done}
 :RECENT_DAYS: ${stats.recentDays}
 :RECENT_COUNT: ${stats.recent.length}
+:WORDS_TOTAL: ${stats.totalWords}
+:DURATION_TOTAL: ${formatDuration(stats.totalDurationMin)}
+:WORDS_RECENT: ${stats.recentWords}
+:DURATION_RECENT: ${formatDuration(stats.recentDurationMin)}
 :END:
-按 TODO 关键字计数：
+
+** 字数与时长
+- 总字数 :: ${formatWords(stats.totalWords)}（${stats.totalWords}）
+- 总时长 :: ${formatDuration(stats.totalDurationMin)}（${stats.totalDurationMin} 分钟）
+- 在读字数 :: ${formatWords(stats.readingWords)}
+- 在读时长 :: ${formatDuration(stats.readingDurationMin)}
+- 已读完字数 :: ${formatWords(stats.doneWords)}
+- 已读完时长 :: ${formatDuration(stats.doneDurationMin)}
+- 近 ${stats.recentDays} 天字数 :: ${formatWords(stats.recentWords)}
+- 近 ${stats.recentDays} 天时长 :: ${formatDuration(stats.recentDurationMin)}
+
+** 按条目
+${byBook || "- （条目尚未填写 :WORDS: / :DURATION:）"}
+
+** TODO 计数
 ${todoLines || "- （无）"}
 
 ** 近 ${stats.recentDays} 天
@@ -53,10 +86,6 @@ function setOutline(orgRoot, expand) {
   });
 }
 
-/**
- * Render reading log as a classic org-mode buffer (not a dashboard).
- * @param {HTMLElement} root
- */
 export async function renderReading(root) {
   root.innerHTML = `
     <div class="org-buffer">
@@ -82,14 +111,15 @@ export async function renderReading(root) {
     const text = await loadReadingOrg();
     const baseDoc = parseOrg(text);
     const stats = orgReadingStats(baseDoc);
-    // Prepend stats as real org text, then render everything with the org engine
     const merged = statsAsOrg(stats) + text;
     const doc = parseOrg(merged);
     renderOrg(doc, orgRoot, { classic: true });
 
     const ml = root.querySelector("#org-modeline-stats");
     if (ml) {
-      ml.textContent = `L1  (READING:${stats.reading} DONE:${stats.done} ALL:${stats.totalTracked})`;
+      ml.textContent =
+        `字数 ${formatWords(stats.totalWords)} · 时长 ${formatDuration(stats.totalDurationMin)} · ` +
+        `READING:${stats.reading} DONE:${stats.done}`;
     }
 
     root.querySelector("#org-showall")?.addEventListener("click", () => setOutline(orgRoot, true));
