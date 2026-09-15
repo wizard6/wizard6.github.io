@@ -3,26 +3,172 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>wizard6</title>
+  <title>wizard6 · book</title>
   <style>
-    :root { color-scheme: light dark; }
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; }
     body {
-      margin: 0; min-height: 100vh; display: grid; place-items: center;
-      font-family: system-ui, -apple-system, Segoe UI, sans-serif;
-      line-height: 1.6; padding: 2rem;
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(1200px 600px at 50% 20%, #1a2233 0%, transparent 60%),
+        #0b0d12;
+      font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+      color: #e8e6e3;
+      overflow: hidden;
     }
-    main { max-width: 36rem; }
-    h1 { font-size: 1.75rem; margin: 0 0 0.5rem; }
-    p { margin: 0.5rem 0; opacity: 0.85; }
-    code { font-size: 0.95em; }
+
+    .stage {
+      perspective: 900px;
+      perspective-origin: 50% 40%;
+    }
+
+    .book {
+      --tilt-x: 0deg;
+      --tilt-y: 0deg;
+      width: 72px;
+      height: 320px;
+      position: relative;
+      transform-style: preserve-3d;
+      transform:
+        rotateY(var(--tilt-y))
+        rotateX(var(--tilt-x));
+      transition: transform 0.12s ease-out;
+      cursor: pointer;
+      filter: drop-shadow(0 18px 28px rgba(0,0,0,0.55));
+    }
+
+    /* spine face — barber-pole stripes */
+    .spine {
+      position: absolute;
+      inset: 0;
+      border-radius: 4px 3px 3px 4px;
+      overflow: hidden;
+      background: #111;
+      box-shadow:
+        inset -6px 0 12px rgba(0,0,0,0.35),
+        inset 4px 0 8px rgba(255,255,255,0.08);
+    }
+
+    .spine::before {
+      content: "";
+      position: absolute;
+      left: -40%;
+      top: -60%;
+      width: 180%;
+      height: 220%;
+      background: repeating-linear-gradient(
+        -28deg,
+        #e11d48 0 18px,
+        #f8fafc 18px 34px,
+        #2563eb 34px 52px,
+        #f8fafc 52px 68px
+      );
+      animation: pole-spin 8s linear infinite;
+      animation-play-state: paused;
+    }
+
+    .book:hover .spine::before {
+      animation-play-state: running;
+    }
+
+    @keyframes pole-spin {
+      to { transform: translateY(68px); }
+    }
+
+    .spine-label {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      letter-spacing: 0.35em;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #0b0d12;
+      text-shadow: 0 1px 0 rgba(255,255,255,0.35);
+      mix-blend-mode: multiply;
+      pointer-events: none;
+      padding: 1.2rem 0;
+    }
+
+    /* thin front edge for depth */
+    .edge {
+      position: absolute;
+      top: 4px;
+      bottom: 4px;
+      right: -10px;
+      width: 10px;
+      background: linear-gradient(90deg, #d6d3d1, #f5f5f4 40%, #a8a29e);
+      transform: skewY(-1deg);
+      border-radius: 0 2px 2px 0;
+      box-shadow: 2px 0 6px rgba(0,0,0,0.2);
+    }
+
+    .pages {
+      position: absolute;
+      top: 6px;
+      bottom: 6px;
+      right: -18px;
+      width: 8px;
+      background: repeating-linear-gradient(
+        to bottom,
+        #fafaf9 0 2px,
+        #e7e5e4 2px 3px
+      );
+      transform: skewY(-1deg);
+      opacity: 0.95;
+    }
+
+    .caption {
+      margin-top: 2.5rem;
+      text-align: center;
+      font-size: 0.85rem;
+      opacity: 0.55;
+      letter-spacing: 0.04em;
+      font-family: system-ui, sans-serif;
+    }
   </style>
 </head>
 <body>
-  <main>
-    <h1>wizard6</h1>
-    <p>站点重建中：旧版 Jekyll 博客已清空，后续将用静态页面重新搭建。</p>
-    <p>旧内容保存在分支 <code>archive/jekyll-legacy</code>。</p>
-    <p><a href="https://github.com/wizard6/wizard6.github.io">GitHub 仓库</a></p>
-  </main>
+  <div>
+    <div class="stage">
+      <div class="book" id="book" aria-label="彩色书脊">
+        <div class="spine">
+          <span class="spine-label">WIZARD</span>
+        </div>
+        <div class="pages" aria-hidden="true"></div>
+        <div class="edge" aria-hidden="true"></div>
+      </div>
+    </div>
+    <p class="caption">把鼠标移到书上 · 倾斜跟随位置</p>
+  </div>
+
+  <script>
+    const book = document.getElementById("book");
+    const maxTilt = 18; // deg
+
+    function setTilt(clientX, clientY) {
+      const r = book.getBoundingClientRect();
+      const px = (clientX - r.left) / r.width;   // 0..1
+      const py = (clientY - r.top) / r.height;   // 0..1
+      const x = Math.min(1, Math.max(0, px));
+      const y = Math.min(1, Math.max(0, py));
+      // left → rotateY negative, top → rotateX positive (toward viewer)
+      const tiltY = (x - 0.5) * 2 * maxTilt;
+      const tiltX = (0.5 - y) * 2 * (maxTilt * 0.65);
+      book.style.setProperty("--tilt-y", tiltY.toFixed(2) + "deg");
+      book.style.setProperty("--tilt-x", tiltX.toFixed(2) + "deg");
+    }
+
+    book.addEventListener("pointermove", (e) => setTilt(e.clientX, e.clientY));
+    book.addEventListener("pointerleave", () => {
+      book.style.setProperty("--tilt-y", "0deg");
+      book.style.setProperty("--tilt-x", "0deg");
+    });
+  </script>
 </body>
 </html>
