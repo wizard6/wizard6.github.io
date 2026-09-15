@@ -162,7 +162,7 @@ function todoClass(todo) {
   return DONE_WORDS.has(todo) ? "is-done" : "is-todo";
 }
 
-function renderNodes(nodes, into) {
+function renderNodes(nodes, into, opts = {}) {
   for (const n of nodes) {
     if (n.type === "headline") {
       const wrap = document.createElement("div");
@@ -193,6 +193,10 @@ function renderNodes(nodes, into) {
       if (n.todo) {
         const todo = document.createElement("span");
         todo.className = `org-todo ${todoClass(n.todo)}`;
+        todo.dataset.todo = n.todo;
+        if (n.todo === "READING" || n.todo === "NEXT" || n.todo === "WAIT") {
+          todo.classList.add("is-special");
+        }
         todo.textContent = n.todo;
         head.appendChild(todo);
       }
@@ -205,19 +209,29 @@ function renderNodes(nodes, into) {
       if (n.tags?.length) {
         const tags = document.createElement("span");
         tags.className = "org-tags";
-        n.tags.forEach((t) => {
-          const tag = document.createElement("span");
-          tag.className = "org-tag";
-          tag.textContent = t;
-          tags.appendChild(tag);
-        });
+        if (opts.classic) {
+          tags.textContent = ":" + n.tags.join(":") + ":";
+        } else {
+          n.tags.forEach((t) => {
+            const tag = document.createElement("span");
+            tag.className = "org-tag";
+            tag.textContent = t;
+            tags.appendChild(tag);
+          });
+        }
         head.appendChild(tags);
+      }
+
+      // classic org: indent by level
+      if (opts.classic) {
+        wrap.style.setProperty("--org-indent", Math.max(0, n.level - 1) * 0.85 + "rem");
+        head.classList.add("org-level-" + Math.min(n.level, 8));
       }
 
       const body = document.createElement("div");
       body.className = "org-h-body";
       if (n.collapsed) body.hidden = true;
-      renderNodes(n.children, body);
+      renderNodes(n.children, body, opts);
 
       const toggle = () => {
         if (!n.children.length) return;
@@ -257,34 +271,58 @@ function renderNodes(nodes, into) {
     }
 
     if (n.type === "list") {
-      const list = document.createElement(n.ordered ? "ol" : "ul");
-      list.className = "org-list";
-      n.items.forEach((it) => {
-        const li = document.createElement("li");
-        li.innerHTML = inlineFormat(it);
-        list.appendChild(li);
-      });
-      into.appendChild(list);
+      if (opts.classic && !n.ordered) {
+        const box = document.createElement("div");
+        box.className = "org-list org-list-plain";
+        n.items.forEach((it) => {
+          const row = document.createElement("div");
+          row.className = "org-list-item";
+          row.innerHTML = '<span class="org-bullet">-</span> ' + inlineFormat(it);
+          box.appendChild(row);
+        });
+        into.appendChild(box);
+      } else {
+        const list = document.createElement(n.ordered ? "ol" : "ul");
+        list.className = "org-list";
+        n.items.forEach((it) => {
+          const li = document.createElement("li");
+          li.innerHTML = inlineFormat(it);
+          list.appendChild(li);
+        });
+        into.appendChild(list);
+      }
       continue;
     }
 
     if (n.type === "props") {
-      const box = document.createElement("details");
-      box.className = "org-props";
-      const sum = document.createElement("summary");
-      sum.textContent = "PROPERTIES";
-      box.appendChild(sum);
-      const dl = document.createElement("dl");
-      Object.entries(n.entries).forEach(([k, v]) => {
-        const dt = document.createElement("dt");
-        dt.textContent = k;
-        const dd = document.createElement("dd");
-        dd.innerHTML = inlineFormat(v);
-        dl.appendChild(dt);
-        dl.appendChild(dd);
-      });
-      box.appendChild(dl);
-      into.appendChild(box);
+      if (opts.classic) {
+        const pre = document.createElement("pre");
+        pre.className = "org-drawer";
+        const lines = [":PROPERTIES:"];
+        Object.entries(n.entries).forEach(([k, v]) => {
+          lines.push(":" + k + ": " + v);
+        });
+        lines.push(":END:");
+        pre.textContent = lines.join("\n");
+        into.appendChild(pre);
+      } else {
+        const box = document.createElement("details");
+        box.className = "org-props";
+        const sum = document.createElement("summary");
+        sum.textContent = "PROPERTIES";
+        box.appendChild(sum);
+        const dl = document.createElement("dl");
+        Object.entries(n.entries).forEach(([k, v]) => {
+          const dt = document.createElement("dt");
+          dt.textContent = k;
+          const dd = document.createElement("dd");
+          dd.innerHTML = inlineFormat(v);
+          dl.appendChild(dt);
+          dl.appendChild(dd);
+        });
+        box.appendChild(dl);
+        into.appendChild(box);
+      }
       continue;
     }
 
@@ -299,27 +337,42 @@ function renderNodes(nodes, into) {
  * @param {Doc} doc
  * @param {HTMLElement} root
  */
-export function renderOrg(doc, root) {
+export function renderOrg(doc, root, opts = {}) {
   root.innerHTML = "";
   root.classList.add("org-view");
+  if (opts.classic) root.classList.add("org-classic");
 
   if (doc.title) {
-    const h = document.createElement("h1");
-    h.className = "org-doc-title";
-    h.textContent = doc.title;
-    root.appendChild(h);
+    if (opts.classic) {
+      const line = document.createElement("div");
+      line.className = "org-keyword";
+      line.innerHTML = '<span class="org-kw">#+TITLE:</span> ' + esc(doc.title);
+      root.appendChild(line);
+    } else {
+      const h = document.createElement("h1");
+      h.className = "org-doc-title";
+      h.textContent = doc.title;
+      root.appendChild(h);
+    }
   }
   if (doc.author) {
-    const a = document.createElement("p");
-    a.className = "org-doc-author";
-    a.textContent = doc.author;
-    root.appendChild(a);
+    if (opts.classic) {
+      const line = document.createElement("div");
+      line.className = "org-keyword";
+      line.innerHTML = '<span class="org-kw">#+AUTHOR:</span> ' + esc(doc.author);
+      root.appendChild(line);
+    } else {
+      const a = document.createElement("p");
+      a.className = "org-doc-author";
+      a.textContent = doc.author;
+      root.appendChild(a);
+    }
   }
 
   const tree = document.createElement("div");
   tree.className = "org-tree";
   tree.setAttribute("role", "tree");
-  renderNodes(doc.children, tree);
+  renderNodes(doc.children, tree, opts);
   root.appendChild(tree);
 }
 

@@ -1,5 +1,4 @@
 import { parseOrg, renderOrg, orgReadingStats } from "../org/engine.js";
-import { esc } from "../utils.js";
 
 async function loadReadingOrg() {
   const res = await fetch("./data/reading.org?v=" + Date.now());
@@ -7,81 +6,96 @@ async function loadReadingOrg() {
   return res.text();
 }
 
-function renderStats(stats, host) {
-  const todoChips = Object.entries(stats.byTodo)
-    .map(([k, v]) => `<span class="read-chip"><b>${esc(k)}</b> ${v}</span>`)
-    .join("");
+/** Build an org-mode preamble for stats (also rendered by the org engine). */
+function statsAsOrg(stats) {
+  const todoLines = Object.entries(stats.byTodo)
+    .map(([k, v]) => `- ${k} :: ${v}`)
+    .join("\n");
+  const recent = (stats.recent.length ? stats.recent : stats.books.slice(0, 8))
+    .slice(0, 8)
+    .map((b) => {
+      const ts = b.date ? ` <${b.date}>` : "";
+      const tags = b.tags?.length ? ` :${b.tags.join(":")}:` : "";
+      return `** ${b.todo} ${b.title}${ts}${tags}`;
+    })
+    .join("\n");
 
-  const recentRows = (stats.recent.length ? stats.recent : stats.books.slice(0, 8))
-    .slice(0, 10)
-    .map(
-      (b) => `
-      <li class="read-row">
-        <span class="org-todo ${b.done ? "is-done" : "is-todo"}">${esc(b.todo)}</span>
-        <span class="read-title">${esc(b.title)}</span>
-        <span class="read-date">${esc(b.date || "—")}</span>
-      </li>`
-    )
-    .join("");
+  return `* 统计 :stats:
+:PROPERTIES:
+:TOTAL: ${stats.totalTracked}
+:READING: ${stats.reading}
+:DONE: ${stats.done}
+:RECENT_DAYS: ${stats.recentDays}
+:RECENT_COUNT: ${stats.recent.length}
+:END:
+按 TODO 关键字计数：
+${todoLines || "- （无）"}
 
-  host.innerHTML = `
-    <div class="read-stats">
-      <div class="read-stat"><strong>${stats.totalTracked}</strong><span>条目</span></div>
-      <div class="read-stat"><strong>${stats.reading}</strong><span>在读</span></div>
-      <div class="read-stat"><strong>${stats.done}</strong><span>已读完</span></div>
-      <div class="read-stat"><strong>${stats.recent.length}</strong><span>${stats.recentDays}天内</span></div>
-    </div>
-    <div class="read-chips">${todoChips || '<span class="muted">暂无 TODO 状态</span>'}</div>
-    <h3 class="read-h">最近动态</h3>
-    <ul class="read-recent">${recentRows || '<li class="empty">暂无读书记录</li>'}</ul>
-  `;
+** 近 ${stats.recentDays} 天
+${recent || "*** （暂无带日期的条目）"}
+
+`;
+}
+
+function setOutline(orgRoot, expand) {
+  const nodes = expand
+    ? orgRoot.querySelectorAll(".org-h")
+    : orgRoot.querySelectorAll('.org-h[data-level]:not([data-level="1"])');
+  nodes.forEach((h) => {
+    if (expand) h.classList.remove("is-collapsed");
+    else h.classList.add("is-collapsed");
+    const body = h.querySelector(":scope > .org-h-body");
+    const fold = h.querySelector(":scope > .org-h-row .org-fold");
+    if (body) body.hidden = !expand;
+    if (fold && !fold.disabled) fold.textContent = expand ? "▾" : "▸";
+    const row = h.querySelector(":scope > .org-h-row");
+    if (row) row.setAttribute("aria-expanded", expand ? "true" : "false");
+  });
 }
 
 /**
+ * Render reading log as a classic org-mode buffer (not a dashboard).
  * @param {HTMLElement} root
  */
 export async function renderReading(root) {
   root.innerHTML = `
-    <div class="reading-app">
-      <div class="reading-toolbar">
-        <span class="muted">org-mode 显示引擎 · data/reading.org</span>
-        <button type="button" class="read-btn" id="read-expand">全部展开</button>
-        <button type="button" class="read-btn" id="read-collapse">全部折叠</button>
+    <div class="org-buffer">
+      <div class="org-buffer-bar">
+        <span class="org-buffer-name">reading.org</span>
+        <span class="org-buffer-mode">Org</span>
+        <span class="org-buffer-actions">
+          <button type="button" class="org-buf-btn" id="org-showall" title="Show All">Show All</button>
+          <button type="button" class="org-buf-btn" id="org-overview" title="Overview">Overview</button>
+        </span>
       </div>
-      <div class="reading-stats" id="reading-stats"></div>
-      <div class="reading-org" id="reading-org"><p class="empty">加载中…</p></div>
+      <div class="org-buffer-body" id="reading-org"><p class="empty">Loading…</p></div>
+      <div class="org-modeline">
+        <span>Org</span>
+        <span id="org-modeline-stats">—</span>
+        <span>data/reading.org</span>
+      </div>
     </div>
   `;
 
+  const orgRoot = root.querySelector("#reading-org");
   try {
     const text = await loadReadingOrg();
-    const doc = parseOrg(text);
-    const stats = orgReadingStats(doc);
-    renderStats(stats, root.querySelector("#reading-stats"));
-    const orgRoot = root.querySelector("#reading-org");
-    renderOrg(doc, orgRoot);
+    const baseDoc = parseOrg(text);
+    const stats = orgReadingStats(baseDoc);
+    // Prepend stats as real org text, then render everything with the org engine
+    const merged = statsAsOrg(stats) + text;
+    const doc = parseOrg(merged);
+    renderOrg(doc, orgRoot, { classic: true });
 
-    root.querySelector("#read-expand")?.addEventListener("click", () => {
-      orgRoot.querySelectorAll(".org-h").forEach((h) => {
-        h.classList.remove("is-collapsed");
-        const body = h.querySelector(":scope > .org-h-body");
-        const fold = h.querySelector(":scope > .org-h-row .org-fold");
-        if (body) body.hidden = false;
-        if (fold && !fold.disabled) fold.textContent = "▾";
-      });
-    });
-    root.querySelector("#read-collapse")?.addEventListener("click", () => {
-      orgRoot.querySelectorAll('.org-h[data-level]:not([data-level="1"])').forEach((h) => {
-        h.classList.add("is-collapsed");
-        const body = h.querySelector(":scope > .org-h-body");
-        const fold = h.querySelector(":scope > .org-h-row .org-fold");
-        if (body) body.hidden = true;
-        if (fold && !fold.disabled) fold.textContent = "▸";
-      });
-    });
+    const ml = root.querySelector("#org-modeline-stats");
+    if (ml) {
+      ml.textContent = `L1  (READING:${stats.reading} DONE:${stats.done} ALL:${stats.totalTracked})`;
+    }
+
+    root.querySelector("#org-showall")?.addEventListener("click", () => setOutline(orgRoot, true));
+    root.querySelector("#org-overview")?.addEventListener("click", () => setOutline(orgRoot, false));
   } catch (e) {
     console.error(e);
-    root.querySelector("#reading-org").innerHTML =
-      '<p class="empty">无法加载 data/reading.org，请检查仓库文件。</p>';
+    orgRoot.innerHTML = '<p class="empty">无法加载 data/reading.org</p>';
   }
 }
