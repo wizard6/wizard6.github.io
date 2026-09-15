@@ -60,8 +60,11 @@ html, body {
 /* Future sticker overlay */
 #sticker-layer {
   position: fixed;
-  inset: 0;
-  z-index: 5;
+  left: var(--dock-w);
+  top: var(--topbar-h);
+  right: 0;
+  bottom: 0;
+  z-index: 3;
   pointer-events: none;
 }
 
@@ -76,23 +79,24 @@ html, body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  padding: 14px 0;
-  background: rgba(12, 16, 26, 0.72);
+  gap: 10px;
+  padding: 16px 0;
+  background: #121826;
+  background: rgba(18, 24, 38, 0.94);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
-  border-right: 1px solid rgba(109, 139, 255, 0.18);
-  box-shadow: 4px 0 28px rgba(0, 0, 0, 0.28);
+  border-right: 1px solid rgba(140, 168, 255, 0.35);
+  box-shadow: 6px 0 32px rgba(0, 0, 0, 0.45);
 }
 
 .dock-btn {
   position: relative;
-  width: 40px;
-  height: 40px;
-  border: 1px solid rgba(109, 139, 255, 0.18);
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(140, 168, 255, 0.4);
   border-radius: 12px;
-  background: rgba(109, 139, 255, 0.08);
-  color: #c4d0ff;
+  background: rgba(109, 139, 255, 0.16);
+  color: #e8ecff;
   cursor: pointer;
   display: grid;
   place-items: center;
@@ -257,7 +261,7 @@ html, body {
   transform: translate(-50%, -50%);
   margin: 0;
   z-index: 2;
-  color: rgba(123, 139, 168, 0.55);
+  color: rgba(180, 196, 230, 0.78);
   font-size: .92rem;
   letter-spacing: .08em;
   pointer-events: none;
@@ -561,4 +565,61 @@ a.ov-card:hover {
   .dock { width: 52px; }
   :root { --dock-w: 52px; }
   .desktop-hint::before { font-size: 2.2rem; }
+}
+
+
+/* Desktop icon grid (Windows-style shortcuts on desktop) */
+.desktop-icons {
+  position: absolute;
+  left: 18px;
+  top: calc(var(--topbar-h) + 18px);
+  z-index: 4;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 76px);
+  gap: 12px 10px;
+  align-content: start;
+  max-width: 320px;
+  pointer-events: auto;
+}
+.desk-icon {
+  width: 76px;
+  border: none;
+  background: transparent;
+  color: var(--text-soft);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 4px;
+  border-radius: 10px;
+  font-family: var(--font-sans);
+  font-size: .72rem;
+  line-height: 1.25;
+  text-align: center;
+}
+.desk-icon:hover,
+.desk-icon:focus-visible {
+  background: rgba(109, 139, 255, 0.18);
+  outline: none;
+}
+.desk-icon .ico {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  font-size: 1.15rem;
+  background: rgba(109, 139, 255, 0.2);
+  border: 1px solid rgba(140, 168, 255, 0.35);
+}
+.desk-icon .lbl {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  word-break: break-all;
+  text-shadow: 0 1px 4px rgba(0,0,0,.65);
 }

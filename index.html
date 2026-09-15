@@ -14,7 +14,16 @@
   <div class="nebula" aria-hidden="true"></div>
   <div id="sticker-layer" aria-hidden="true"></div>
 
-  <aside class="dock" id="dock" aria-label="快捷方式"></aside>
+  <aside class="dock" id="dock" aria-label="快捷方式">
+    <button type="button" class="dock-btn" data-id="overview" title="概览" aria-label="概览"><span class="dock-ico" aria-hidden="true">☁</span><span class="dock-tip">概览</span></button>
+    <button type="button" class="dock-btn" data-id="todos" title="待办" aria-label="待办"><span class="dock-ico" aria-hidden="true">☑</span><span class="dock-tip">待办</span></button>
+    <button type="button" class="dock-btn" data-id="status" title="状态" aria-label="状态"><span class="dock-ico" aria-hidden="true">◉</span><span class="dock-tip">状态</span></button>
+    <button type="button" class="dock-btn" data-id="templates" title="模板" aria-label="模板"><span class="dock-ico" aria-hidden="true">▦</span><span class="dock-tip">模板</span></button>
+    <button type="button" class="dock-btn" data-id="nav" title="导航" aria-label="导航"><span class="dock-ico" aria-hidden="true">⧉</span><span class="dock-tip">导航</span></button>
+    <button type="button" class="dock-btn" data-id="stack" title="软件账号" aria-label="软件账号"><span class="dock-ico" aria-hidden="true">⊞</span><span class="dock-tip">软件账号</span></button>
+    <button type="button" class="dock-btn" data-id="stickers" title="贴图" aria-label="贴图"><span class="dock-ico" aria-hidden="true">🖼</span><span class="dock-tip">贴图</span></button>
+    <button type="button" class="dock-btn" data-id="run" title="运行" aria-label="运行"><span class="dock-ico" aria-hidden="true">▷</span><span class="dock-tip">运行</span></button>
+  </aside>
 
   <div class="desktop">
     <header class="topbar">
@@ -25,12 +34,11 @@
       </div>
     </header>
 
+    <div class="desktop-icons" id="desktop-icons" aria-label="桌面快捷方式"></div>
     <div id="window-layer"></div>
-
     <p class="desktop-hint">从左侧快捷方式打开窗口</p>
   </div>
 
-  <!-- Stub for future Win+R quick run (hidden). Alt+R opens run placeholder via JS. -->
   <div id="run-dialog" hidden aria-hidden="true"></div>
 
   <script type="module" src="./js/app.js"></script>

@@ -1,5 +1,5 @@
 import { initWm, openWindow } from "./wm.js";
-import { initDock, setDockActive } from "./dock.js";
+import { initDock, setDockActive, renderDesktopIcons } from "./dock.js";
 import { renderTodos, mergeTodos } from "./modules/todos.js";
 import { renderStatus } from "./modules/status.js";
 import { renderTemplates } from "./modules/templates.js";
@@ -192,6 +192,10 @@ async function boot() {
   initWm();
   wireHotkeys();
 
+  // Show dock immediately (defaults), don't wait on network
+  initDock(null, openShortcut);
+  renderDesktopIcons(null, openShortcut);
+
   try {
     cfg = await loadConfig();
   } catch (e) {
@@ -201,11 +205,22 @@ async function boot() {
 
   todosCache = mergeTodos(cfg.todos || []);
 
-  // Update online pill label from config
   const pillLabel = document.querySelector(".pill-label");
   if (pillLabel && cfg.status?.label) pillLabel.textContent = cfg.status.label;
 
+  // Refresh from config
   initDock(cfg.shortcuts, openShortcut);
+  renderDesktopIcons(cfg.shortcuts, openShortcut);
+
+  // First visit: open overview so the desktop is not empty
+  try {
+    if (!sessionStorage.getItem("wb_opened")) {
+      sessionStorage.setItem("wb_opened", "1");
+      openShortcut("overview");
+    }
+  } catch (_) {
+    openShortcut("overview");
+  }
 }
 
 boot();
