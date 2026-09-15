@@ -9,6 +9,15 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Noto+Serif+SC:wght@500;700&family=Zhi+Mang+Xing&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="./css/workbench.css" />
+  <script>
+    try {
+      if (sessionStorage.getItem("wb_gate_v1") !== "ok") {
+        document.documentElement.classList.add("is-locked");
+      }
+    } catch (e) {
+      document.documentElement.classList.add("is-locked");
+    }
+  </script>
 </head>
 <body>
   <div class="nebula" aria-hidden="true"></div>

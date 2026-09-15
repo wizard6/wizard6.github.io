@@ -1213,3 +1213,56 @@ a.ov-card:hover {
   .cal-side { border-left: none; border-top: 1px solid rgba(109,139,255,.15); max-height: 180px; }
 }
 
+
+
+/* —— Auth gate —— */
+html.is-locked, html.is-locked body {
+  overflow: hidden;
+}
+.auth-gate {
+  position: fixed; inset: 0; z-index: 9999;
+  display: grid; place-items: center;
+  background:
+    radial-gradient(700px 420px at 20% 10%, rgba(109,139,255,.22), transparent 55%),
+    radial-gradient(600px 400px at 80% 80%, rgba(167,139,250,.14), transparent 50%),
+    rgba(8,10,15,.92);
+  backdrop-filter: blur(10px);
+}
+.auth-card {
+  width: min(400px, calc(100vw - 32px));
+  padding: 22px 22px 18px;
+  border-radius: 16px;
+  border: 1px solid rgba(140,168,255,.3);
+  background: rgba(16,22,34,.94);
+  box-shadow: 0 20px 50px rgba(0,0,0,.45);
+  color: #e2e8f0;
+  font-family: "Segoe UI", system-ui, "PingFang SC", sans-serif;
+}
+.auth-kicker {
+  font-size: 11px; letter-spacing: .14em; color: #a78bfa; margin-bottom: 6px;
+}
+.auth-card h1 { margin: 0 0 8px; font-size: 1.35rem; }
+.auth-desc { margin: 0 0 16px; color: #94a3b8; font-size: .86rem; line-height: 1.5; }
+.auth-label { display: block; font-size: .78rem; color: #94a3b8; margin-bottom: 6px; }
+.auth-input {
+  width: 100%; box-sizing: border-box;
+  padding: 10px 12px; border-radius: 10px;
+  border: 1px solid rgba(140,168,255,.3);
+  background: rgba(0,0,0,.25); color: #e2e8f0;
+  font: inherit; margin-bottom: 12px;
+}
+.auth-input:focus { outline: none; border-color: rgba(140,168,255,.65); }
+.auth-btn {
+  width: 100%; padding: 10px 12px; border-radius: 10px; border: none;
+  background: linear-gradient(135deg, #6d8bff, #a78bfa);
+  color: #0b0e14; font: inherit; font-weight: 700; cursor: pointer;
+}
+.auth-btn:disabled { opacity: .6; cursor: wait; }
+.auth-error { margin: 10px 0 0; color: #fca5a5; font-size: .82rem; }
+
+
+html.is-locked .dock,
+html.is-locked .desktop,
+html.is-locked #sticker-layer {
+  visibility: hidden;
+}

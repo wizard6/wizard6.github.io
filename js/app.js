@@ -15,6 +15,7 @@ import { renderIdeas } from "./modules/ideas.js";
 import { renderJournal } from "./modules/journal.js";
 import { renderJournalJson } from "./modules/journal-json.js";
 import { renderCalendar } from "./modules/calendar.js";
+import { requireGate } from "./auth/gate.js";
 
 let cfg = null;
 let todosCache = [];
@@ -342,4 +343,7 @@ async function boot() {
   }
 }
 
-boot();
+requireGate().then(() => boot()).catch((e) => {
+  console.error(e);
+  document.body.innerHTML = "<p style=\"color:#fca5a5;padding:24px\">门禁初始化失败</p>";
+});
