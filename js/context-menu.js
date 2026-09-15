@@ -58,6 +58,7 @@ function defaultItems() {
     item("模板", "open:templates"),
     item("导航", "open:nav"),
     item("软件与账号", "open:stack"),
+    item("最近读书", "open:reading"),
     sep(),
     item("贴图", "open:stickers"),
     item("运行…", "open:run", { kbd: "Alt+R" }),

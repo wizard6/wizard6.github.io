@@ -8,6 +8,7 @@ import { renderSoftware } from "./modules/stack.js";
 import { renderOverview } from "./modules/overview.js";
 import { renderPlaceholder } from "./modules/placeholder.js";
 import { initContextMenu } from "./context-menu.js";
+import { renderReading } from "./modules/reading.js";
 
 let cfg = null;
 let todosCache = [];
@@ -120,6 +121,19 @@ function openShortcut(id) {
         mount(body) {
           body.innerHTML = '<div class="soft-list" id="soft-list"></div>';
           renderSoftware(cfg?.software || [], body.querySelector("#soft-list"));
+        },
+      });
+      break;
+
+
+    case "reading":
+      openWindow("reading", {
+        title: meta.title || "读书",
+        icon: meta.icon || "📖",
+        width: 640,
+        height: 560,
+        mount(body) {
+          renderReading(body);
         },
       });
       break;

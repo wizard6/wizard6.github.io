@@ -40,6 +40,11 @@
       "title": "软件账号"
     },
     {
+      "id": "reading",
+      "icon": "📖",
+      "title": "读书"
+    },
+    {
       "id": "stickers",
       "icon": "🖼",
       "title": "贴图"
