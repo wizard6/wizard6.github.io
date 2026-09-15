@@ -59,27 +59,19 @@
     .scroll-root {
       position: fixed;
       inset: 0;
-      overflow-x: hidden;
-      overflow-y: auto;
-      overscroll-behavior: contain;
-      scroll-behavior: smooth;
-      scrollbar-width: none !important;
-      -ms-overflow-style: none !important;
-    }
-    .scroll-root::-webkit-scrollbar {
-      width: 0 !important;
-      height: 0 !important;
-      display: none !important;
+      overflow: hidden; /* page shell does not scroll; board does */
+      display: flex;
+      flex-direction: column;
     }
 
     /* Custom scrollbar (non-native) */
     .sb-rail {
-      position: fixed;
-      top: 10px;
-      right: 6px;
-      bottom: 10px;
+      position: absolute;
+      top: 8px;
+      right: 2px;
+      bottom: 8px;
       width: 14px;
-      z-index: 100;
+      z-index: 5;
       pointer-events: none;
       opacity: 0;
       transition: opacity .2s ease;
@@ -138,12 +130,21 @@
     }
     @keyframes drift { to { transform: translate3d(-3%, 2%, 0); } }
 
-    .app { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; }
+    .app {
+      position: relative;
+      z-index: 1;
+      min-height: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
 
     .site-header {
-      position: sticky; top: 0; z-index: 20;
+      position: relative;
+      z-index: 20;
+      flex: 0 0 auto;
       backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
-      background: rgba(8,10,15,.52);
+      background: rgba(8,10,15,.72);
       border-bottom: 1px solid var(--line);
     }
     .site-header::after {
@@ -172,16 +173,26 @@
     }
     .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 10px rgba(52,211,153,.7); }
 
-    .container { max-width: 1120px; margin: 0 auto; padding: 28px 20px 48px; width: 100%; }
+    .container {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 20px 20px 0;
+      width: 100%;
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
 
     .hero {
       position: relative;
-      padding: 28px 28px 24px;
+      flex: 0 0 auto;
+      padding: 22px 24px 18px;
       border-radius: calc(var(--radius) + 2px);
       border: 1px solid var(--line);
       background: var(--hero-bg, linear-gradient(135deg, rgba(109,139,255,.08), rgba(167,139,250,.05))), var(--card);
       box-shadow: var(--shadow);
-      margin-bottom: 22px;
+      margin-bottom: 14px;
       overflow: hidden;
     }
     .hero::before {
@@ -221,6 +232,24 @@
       font-family: var(--font-serif);
     }
     .stat span { color: var(--muted); font-size: .75rem; letter-spacing: .04em; }
+
+    .board {
+      position: relative;
+      flex: 1;
+      min-height: 0;
+      overflow-x: hidden;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      scroll-behavior: smooth;
+      padding: 2px 18px 28px 0; /* room for custom rail inside board */
+      scrollbar-width: none !important;
+      -ms-overflow-style: none !important;
+    }
+    .board::-webkit-scrollbar {
+      width: 0 !important;
+      height: 0 !important;
+      display: none !important;
+    }
 
     .grid {
       display: grid;
@@ -330,9 +359,9 @@
     }
 
     .site-footer {
-      margin-top: auto;
+      flex: 0 0 auto;
       border-top: 1px solid var(--line);
-      background: rgba(8,10,15,.4);
+      background: rgba(8,10,15,.55);
     }
     .footer-inner {
       max-width: 1120px; margin: 0 auto; padding: 14px 20px;
@@ -352,9 +381,6 @@
 </head>
 <body>
   <div class="nebula" aria-hidden="true"></div>
-  <div class="sb-rail" id="sb-rail" aria-hidden="true">
-    <div class="sb-thumb" id="sb-thumb" role="scrollbar" aria-controls="scroll-root" aria-orientation="vertical"></div>
-  </div>
   <div class="scroll-root" id="scroll-root">
   <div class="app">
     <header class="site-header">
@@ -388,6 +414,10 @@
         </div>
       </section>
 
+      <div class="board" id="board">
+      <div class="sb-rail" id="sb-rail" aria-hidden="true">
+        <div class="sb-thumb" id="sb-thumb" role="scrollbar" aria-controls="board" aria-orientation="vertical"></div>
+      </div>
       <div class="grid" id="modules">
         <a class="card" href="https://github.com/wizard6" target="_blank" rel="noreferrer">
           <div class="card-kicker">
@@ -459,6 +489,7 @@
           </div>
         </section>
       </div>
+      </div>
     </div>
 
     <footer class="site-footer">
@@ -488,7 +519,7 @@
 
   <script>
     (function () {
-      const root = document.getElementById("scroll-root");
+      const root = document.getElementById("board");
       const rail = document.getElementById("sb-rail");
       const thumb = document.getElementById("sb-thumb");
       if (!root || !rail || !thumb) return;
