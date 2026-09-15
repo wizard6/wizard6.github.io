@@ -662,3 +662,65 @@ a.ov-card:hover {
   word-break: break-all;
   text-shadow: 0 1px 4px rgba(0,0,0,.65);
 }
+
+
+/* —— Context menu —— */
+.ctx-menu {
+  position: fixed;
+  z-index: 1000;
+  min-width: 200px;
+  padding: 6px;
+  border-radius: 12px;
+  border: 1px solid rgba(140, 168, 255, 0.35);
+  background: rgba(16, 22, 34, 0.96);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.ctx-menu[hidden] { display: none !important; }
+.ctx-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-soft);
+  font: inherit;
+  font-size: .86rem;
+  text-align: left;
+  padding: 8px 10px;
+  cursor: pointer;
+}
+.ctx-item:hover,
+.ctx-item:focus-visible {
+  background: rgba(109, 139, 255, 0.2);
+  color: #eef2ff;
+  outline: none;
+}
+.ctx-item.is-danger:hover,
+.ctx-item.is-danger:focus-visible {
+  background: rgba(248, 113, 113, 0.2);
+  color: #fecaca;
+}
+.ctx-item.is-disabled,
+.ctx-item:disabled {
+  opacity: 0.45;
+  cursor: default;
+  pointer-events: none;
+}
+.ctx-kbd {
+  color: var(--muted);
+  font-size: .72rem;
+  letter-spacing: .04em;
+}
+.ctx-sep {
+  height: 1px;
+  margin: 4px 6px;
+  background: rgba(109, 139, 255, 0.18);
+}

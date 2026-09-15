@@ -1,4 +1,4 @@
-import { initWm, openWindow } from "./wm.js";
+import { initWm, openWindow, minimizeWindow, maximizeWindow, closeWindow } from "./wm.js";
 import { initDock, setDockActive, renderDesktopIcons } from "./dock.js";
 import { renderTodos, mergeTodos } from "./modules/todos.js";
 import { renderStatus } from "./modules/status.js";
@@ -7,6 +7,7 @@ import { renderNav } from "./modules/nav.js";
 import { renderSoftware } from "./modules/stack.js";
 import { renderOverview } from "./modules/overview.js";
 import { renderPlaceholder } from "./modules/placeholder.js";
+import { initContextMenu } from "./context-menu.js";
 
 let cfg = null;
 let todosCache = [];
@@ -191,6 +192,27 @@ async function boot() {
   setInterval(tick, 15000);
   initWm();
   wireHotkeys();
+  initContextMenu((action) => {
+    if (action === "reload") {
+      location.reload();
+      return;
+    }
+    if (action.startsWith("open:")) {
+      openShortcut(action.slice(5));
+      return;
+    }
+    if (action.startsWith("win:min:")) {
+      minimizeWindow(action.slice(8));
+      return;
+    }
+    if (action.startsWith("win:max:")) {
+      maximizeWindow(action.slice(8));
+      return;
+    }
+    if (action.startsWith("win:close:")) {
+      closeWindow(action.slice(10));
+    }
+  });
 
   // Show dock immediately (defaults), don't wait on network
   initDock(null, openShortcut);
