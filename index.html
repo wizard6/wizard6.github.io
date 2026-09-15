@@ -34,47 +34,66 @@
       --scrollbar-thumb-active: rgba(167, 139, 250, 0.48);
     }
     * { box-sizing: border-box; }
+    html {
+      scrollbar-width: none; /* Firefox: hide native */
+    }
+    html::-webkit-scrollbar,
+    body::-webkit-scrollbar {
+      width: 0 !important;
+      height: 0 !important;
+      display: none;
+    }
     body {
       margin: 0;
       min-height: 100vh;
       font-family: var(--font-sans);
       color: var(--text);
       background: var(--bg);
-      scrollbar-width: thin;
-      scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
       scroll-behavior: smooth;
+      -ms-overflow-style: none; /* old Edge */
     }
 
-    /* Chromium / Safari */
-    *::-webkit-scrollbar {
-      width: var(--scrollbar-size);
-      height: var(--scrollbar-size);
+    /* Custom scrollbar (non-native) */
+    .sb-rail {
+      position: fixed;
+      top: 12px;
+      right: 8px;
+      bottom: 12px;
+      width: 12px;
+      z-index: 50;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity .25s ease;
     }
-    *::-webkit-scrollbar-track {
-      background: var(--scrollbar-track);
+    .sb-rail.is-visible {
+      opacity: 1;
+      pointer-events: auto;
     }
-    *::-webkit-scrollbar-thumb {
-      background: linear-gradient(180deg, rgba(140,168,255,0.34), rgba(167,139,250,0.28));
-      background-clip: padding-box;
-      border: 2px solid transparent;
+    .sb-rail::before {
+      content: "";
+      position: absolute;
+      inset: 0;
       border-radius: 999px;
-      min-height: 40px;
-      box-shadow: 0 0 12px rgba(109, 139, 255, 0.12);
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(109,139,255,0.08);
     }
-    *::-webkit-scrollbar-thumb:hover {
-      background: linear-gradient(180deg, var(--scrollbar-thumb-hover), rgba(167,139,250,0.42));
-      background-clip: padding-box;
-      border: 2px solid transparent;
-      box-shadow: 0 0 16px rgba(109, 139, 255, 0.22);
+    .sb-thumb {
+      position: absolute;
+      left: 2px;
+      width: 8px;
+      min-height: 36px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, rgba(140,168,255,0.55), rgba(167,139,250,0.42));
+      box-shadow: 0 0 16px rgba(109,139,255,0.28);
+      cursor: grab;
+      touch-action: none;
     }
-    *::-webkit-scrollbar-thumb:active {
-      background: linear-gradient(180deg, var(--scrollbar-thumb-active), rgba(167,139,250,0.55));
-      background-clip: padding-box;
-      border: 2px solid transparent;
+    .sb-thumb:hover,
+    .sb-thumb.is-dragging {
+      background: linear-gradient(180deg, rgba(160,184,255,0.85), rgba(186,156,255,0.7));
+      box-shadow: 0 0 22px rgba(109,139,255,0.42);
     }
-    *::-webkit-scrollbar-corner {
-      background: transparent;
-    }
+    .sb-thumb.is-dragging { cursor: grabbing; }
     .nebula {
       position: fixed; inset: 0; z-index: 0; pointer-events: none;
       background:
@@ -312,6 +331,9 @@
 </head>
 <body>
   <div class="nebula" aria-hidden="true"></div>
+  <div class="sb-rail" id="sb-rail" aria-hidden="true">
+    <div class="sb-thumb" id="sb-thumb" role="scrollbar" aria-controls="document" aria-orientation="vertical"></div>
+  </div>
   <div class="app">
     <header class="site-header">
       <div class="header-inner">
@@ -440,5 +462,112 @@
     document.getElementById("mod-count").textContent =
       document.querySelectorAll("#modules > .card").length;
   </script>
+
+  <script>
+    (function () {
+      const rail = document.getElementById("sb-rail");
+      const thumb = document.getElementById("sb-thumb");
+      if (!rail || !thumb) return;
+
+      let hideTimer = 0;
+      let dragging = false;
+      let dragStartY = 0;
+      let dragStartScroll = 0;
+
+      function metrics() {
+        const view = window.innerHeight;
+        const doc = Math.max(
+          document.documentElement.scrollHeight,
+          document.body.scrollHeight
+        );
+        const track = rail.clientHeight;
+        const ratio = view / doc;
+        const thumbH = Math.max(36, Math.round(track * ratio));
+        const maxScroll = Math.max(0, doc - view);
+        const maxTop = Math.max(0, track - thumbH);
+        const top = maxScroll === 0 ? 0 : (window.scrollY / maxScroll) * maxTop;
+        return { view, doc, track, thumbH, maxScroll, maxTop, top };
+      }
+
+      function render() {
+        const m = metrics();
+        const needed = m.doc > m.view + 2;
+        rail.classList.toggle("is-visible", needed || dragging);
+        rail.setAttribute("aria-hidden", needed ? "false" : "true");
+        if (!needed) return;
+        thumb.style.height = m.thumbH + "px";
+        thumb.style.transform = "translateY(" + m.top + "px)";
+        thumb.setAttribute("aria-valuenow", String(Math.round(window.scrollY)));
+        thumb.setAttribute("aria-valuemin", "0");
+        thumb.setAttribute("aria-valuemax", String(Math.round(m.maxScroll)));
+      }
+
+      function flash() {
+        const m = metrics();
+        if (m.doc <= m.view + 2 && !dragging) {
+          rail.classList.remove("is-visible");
+          return;
+        }
+        rail.classList.add("is-visible");
+        clearTimeout(hideTimer);
+        if (!dragging) {
+          hideTimer = setTimeout(() => {
+            if (!dragging) rail.classList.remove("is-visible");
+          }, 900);
+        }
+      }
+
+      function onScroll() {
+        render();
+        flash();
+      }
+
+      thumb.addEventListener("pointerdown", (e) => {
+        dragging = true;
+        thumb.classList.add("is-dragging");
+        dragStartY = e.clientY;
+        dragStartScroll = window.scrollY;
+        thumb.setPointerCapture(e.pointerId);
+        flash();
+        e.preventDefault();
+      });
+
+      thumb.addEventListener("pointermove", (e) => {
+        if (!dragging) return;
+        const m = metrics();
+        const dy = e.clientY - dragStartY;
+        const scrollDelta = m.maxTop === 0 ? 0 : (dy / m.maxTop) * m.maxScroll;
+        window.scrollTo(0, dragStartScroll + scrollDelta);
+      });
+
+      function endDrag(e) {
+        if (!dragging) return;
+        dragging = false;
+        thumb.classList.remove("is-dragging");
+        try { thumb.releasePointerCapture(e.pointerId); } catch (_) {}
+        flash();
+      }
+      thumb.addEventListener("pointerup", endDrag);
+      thumb.addEventListener("pointercancel", endDrag);
+
+      rail.addEventListener("pointerdown", (e) => {
+        if (e.target === thumb) return;
+        const m = metrics();
+        const rect = rail.getBoundingClientRect();
+        const y = e.clientY - rect.top - m.thumbH / 2;
+        const top = Math.min(m.maxTop, Math.max(0, y));
+        const scroll = m.maxTop === 0 ? 0 : (top / m.maxTop) * m.maxScroll;
+        window.scrollTo({ top: scroll, behavior: "smooth" });
+        flash();
+      });
+
+      window.addEventListener("scroll", onScroll, { passive: true });
+      window.addEventListener("resize", () => { render(); flash(); });
+      render();
+      // show briefly on load if scrollable
+      flash();
+    })();
+  </script>
+
 </body>
 </html>
