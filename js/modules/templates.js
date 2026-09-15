@@ -1,7 +1,11 @@
 import { esc } from "../utils.js";
 
-export function renderTemplates(list) {
-  const root = document.getElementById("tpl-list");
+/**
+ * @param {Array} list
+ * @param {HTMLElement} [rootEl] optional root (defaults to #tpl-list)
+ */
+export function renderTemplates(list, rootEl) {
+  const root = rootEl || document.getElementById("tpl-list");
   if (!root) return;
   if (!list?.length) { root.innerHTML = '<p class="empty">暂无模板。</p>'; return; }
   root.innerHTML = list.map((t) => {

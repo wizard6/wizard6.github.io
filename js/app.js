@@ -1,9 +1,15 @@
-import { initScrollbar } from "./scrollbar.js";
+import { initWm, openWindow } from "./wm.js";
+import { initDock, setDockActive } from "./dock.js";
 import { renderTodos, mergeTodos } from "./modules/todos.js";
 import { renderStatus } from "./modules/status.js";
 import { renderTemplates } from "./modules/templates.js";
 import { renderNav } from "./modules/nav.js";
 import { renderSoftware } from "./modules/stack.js";
+import { renderOverview } from "./modules/overview.js";
+import { renderPlaceholder } from "./modules/placeholder.js";
+
+let cfg = null;
+let todosCache = [];
 
 function tick() {
   const now = new Date();
@@ -12,16 +18,15 @@ function tick() {
   const clock = document.getElementById("clock");
   if (clock) clock.textContent = hh + ":" + mm;
   const h = now.getHours();
-  const daypart = document.getElementById("daypart");
-  if (daypart) {
-    daypart.textContent =
-      h < 6 ? "深夜" : h < 12 ? "上午" : h < 18 ? "下午" : "夜晚";
-  }
+  const daypart = h < 6 ? "深夜" : h < 12 ? "上午" : h < 18 ? "下午" : "夜晚";
+  document.querySelectorAll("#daypart").forEach((el) => {
+    el.textContent = daypart;
+  });
 }
 
-function setModCount() {
-  const count = document.getElementById("mod-count");
-  if (count) count.textContent = document.querySelectorAll("#modules > .card").length;
+function daypartNow() {
+  const h = new Date().getHours();
+  return h < 6 ? "深夜" : h < 12 ? "上午" : h < 18 ? "下午" : "夜晚";
 }
 
 async function loadConfig() {
@@ -30,34 +35,177 @@ async function loadConfig() {
   return res.json();
 }
 
-async function hydrateWorkbench() {
-  try {
-    const cfg = await loadConfig();
-    if (cfg.title) {
-      const h1 = document.querySelector(".hero h1");
-      if (h1) h1.textContent = cfg.title;
-    }
-    if (cfg.subtitle) {
-      const d = document.querySelector(".hero-desc");
-      if (d) d.textContent = cfg.subtitle;
-    }
-    const dayEl = document.getElementById("daypart");
-    const daypart = dayEl ? dayEl.textContent : "";
-    renderTodos(mergeTodos(cfg.todos || []));
-    renderStatus(cfg.status || {}, daypart);
-    renderTemplates(cfg.templates || []);
-    renderNav(cfg.nav || []);
-    renderSoftware(cfg.software || []);
-    setModCount();
-  } catch (e) {
-    const todo = document.getElementById("todo-list");
-    if (todo) todo.innerHTML = '<p class="empty">配置加载失败，请检查 config/workbench.json</p>';
-    console.error(e);
+function shortcutMeta(id) {
+  const list = cfg?.shortcuts || [];
+  return list.find((s) => s.id === id) || { id, icon: "◇", title: id };
+}
+
+function openShortcut(id) {
+  const meta = shortcutMeta(id);
+  setDockActive(id);
+
+  switch (id) {
+    case "overview":
+      openWindow("overview", {
+        title: meta.title || "概览",
+        icon: meta.icon || "☁",
+        width: 560,
+        height: 520,
+        mount(body) {
+          renderOverview(body, cfg || {});
+        },
+      });
+      break;
+
+    case "todos":
+      openWindow("todos", {
+        title: meta.title || "待办",
+        icon: meta.icon || "☑",
+        width: 420,
+        height: 400,
+        mount(body) {
+          body.innerHTML = '<ul class="todo-list" id="todo-list"></ul>';
+          const list = body.querySelector("#todo-list");
+          renderTodos(todosCache.length ? todosCache : mergeTodos(cfg?.todos || []), list);
+        },
+      });
+      break;
+
+    case "status":
+      openWindow("status", {
+        title: meta.title || "状态",
+        icon: meta.icon || "◉",
+        width: 400,
+        height: 360,
+        mount(body) {
+          body.innerHTML = '<div class="status-grid" id="status-grid"></div>';
+          renderStatus(cfg?.status || {}, daypartNow(), body.querySelector("#status-grid"));
+        },
+      });
+      break;
+
+    case "templates":
+      openWindow("templates", {
+        title: meta.title || "模板",
+        icon: meta.icon || "▦",
+        width: 420,
+        height: 400,
+        mount(body) {
+          body.innerHTML = '<div class="tpl-list" id="tpl-list"></div>';
+          renderTemplates(cfg?.templates || [], body.querySelector("#tpl-list"));
+        },
+      });
+      break;
+
+    case "nav":
+      openWindow("nav", {
+        title: meta.title || "导航",
+        icon: meta.icon || "⧉",
+        width: 400,
+        height: 420,
+        mount(body) {
+          body.innerHTML = '<div class="nav-groups" id="nav-groups"></div>';
+          renderNav(cfg?.nav || [], body.querySelector("#nav-groups"));
+        },
+      });
+      break;
+
+    case "stack":
+      openWindow("stack", {
+        title: meta.title || "软件账号",
+        icon: meta.icon || "⊞",
+        width: 480,
+        height: 420,
+        mount(body) {
+          body.innerHTML = '<div class="soft-list" id="soft-list"></div>';
+          renderSoftware(cfg?.software || [], body.querySelector("#soft-list"));
+        },
+      });
+      break;
+
+    case "stickers":
+      openWindow("stickers", {
+        title: meta.title || "贴图",
+        icon: meta.icon || "🖼",
+        width: 360,
+        height: 280,
+        mount(body) {
+          renderPlaceholder(body, {
+            icon: "🖼",
+            title: "贴图",
+            hint: "桌面贴图层即将接入。可在 #sticker-layer 放置装饰与便签。",
+          });
+        },
+      });
+      break;
+
+    case "run":
+      openRunPlaceholder();
+      break;
+
+    default:
+      openWindow(id, {
+        title: meta.title || id,
+        icon: meta.icon || "◇",
+        width: 360,
+        height: 260,
+        mount(body) {
+          renderPlaceholder(body, { icon: meta.icon, title: meta.title, hint: "未知模块。" });
+        },
+      });
   }
 }
 
-tick();
-setInterval(tick, 15000);
-setModCount();
-initScrollbar("board", "sb-rail", "sb-thumb");
-hydrateWorkbench();
+function openRunPlaceholder() {
+  const meta = shortcutMeta("run");
+  openWindow("run", {
+    title: meta.title || "运行",
+    icon: meta.icon || "▷",
+    width: 400,
+    height: 280,
+    mount(body) {
+      renderPlaceholder(body, {
+        icon: "▷",
+        title: "快速运行",
+        // Win+R will map later; for now Alt+R / dock only (Ctrl+R left to browser)
+        hint: "即将接入 Win+R 风格快速运行。当前可用 Alt+R 或左侧「运行」打开此占位。",
+      });
+    },
+  });
+  setDockActive("run");
+}
+
+function wireHotkeys() {
+  // Prefer Alt+R for run stub — do NOT hijack Ctrl+R (browser refresh).
+  // Meta+R / Win+R can be mapped later when stickers/run land.
+  document.addEventListener("keydown", (e) => {
+    if (e.altKey && !e.ctrlKey && !e.metaKey && (e.key === "r" || e.key === "R")) {
+      e.preventDefault();
+      openRunPlaceholder();
+    }
+  });
+}
+
+async function boot() {
+  tick();
+  setInterval(tick, 15000);
+  initWm();
+  wireHotkeys();
+
+  try {
+    cfg = await loadConfig();
+  } catch (e) {
+    console.error(e);
+    cfg = { shortcuts: [], todos: [], status: {}, templates: [], nav: [], software: [] };
+  }
+
+  todosCache = mergeTodos(cfg.todos || []);
+
+  // Update online pill label from config
+  const pillLabel = document.querySelector(".pill-label");
+  if (pillLabel && cfg.status?.label) pillLabel.textContent = cfg.status.label;
+
+  initDock(cfg.shortcuts, openShortcut);
+}
+
+boot();

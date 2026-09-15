@@ -1,7 +1,11 @@
 import { esc } from "../utils.js";
 
-export function renderNav(list) {
-  const root = document.getElementById("nav-groups");
+/**
+ * @param {Array} list
+ * @param {HTMLElement} [rootEl] optional root (defaults to #nav-groups)
+ */
+export function renderNav(list, rootEl) {
+  const root = rootEl || document.getElementById("nav-groups");
   if (!root) return;
   if (!list?.length) { root.innerHTML = '<p class="empty">暂无导航。</p>'; return; }
   const groups = {};

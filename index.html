@@ -12,155 +12,26 @@
 </head>
 <body>
   <div class="nebula" aria-hidden="true"></div>
-  <div class="scroll-root" id="scroll-root">
-  <div class="app">
-    <header class="site-header">
-      <div class="header-inner">
-        <a class="brand" href="./">wizard6<span>CLOUD WORKBENCH</span></a>
-        <div class="header-meta">
-          <span class="pill"><i class="dot" aria-hidden="true"></i> 云端在线</span>
-          <span id="clock">--:--</span>
-        </div>
+  <div id="sticker-layer" aria-hidden="true"></div>
+
+  <aside class="dock" id="dock" aria-label="快捷方式"></aside>
+
+  <div class="desktop">
+    <header class="topbar">
+      <a class="brand" href="./">wizard6<span>CLOUD WORKBENCH</span></a>
+      <div class="topbar-meta">
+        <span class="pill"><i class="dot" aria-hidden="true"></i> <span class="pill-label">云端在线</span></span>
+        <span id="clock">--:--</span>
       </div>
     </header>
 
-    <div class="container">
-      <section class="hero">
-        <div class="hero-body">
-          <div class="hero-eyebrow">Cloud Workbench</div>
-          <h1>云端工作台</h1>
-          <p class="hero-desc">入口模块 + 待办 · 状态 · 模板 · 导航 · 账号</p>
-          <div class="hero-row">
-            <div style="display:flex;gap:22px;flex-wrap:wrap;">
-              <div class="stat"><strong id="mod-count">6</strong><span>工作区模块</span></div>
-              <div class="stat"><strong>GitHub</strong><span>已连接账号</span></div>
-              <div class="stat"><strong id="daypart">—</strong><span>当前时段</span></div>
-            </div>
-            <div class="quick" aria-label="快捷操作">
-              <a class="chip" href="https://github.com/wizard6" target="_blank" rel="noreferrer">打开 GitHub</a>
-              <a class="chip" href="https://github.com/wizard6?tab=repositories" target="_blank" rel="noreferrer">仓库列表</a>
-              <a class="chip" href="https://github.com/wizard6/wizard6.github.io" target="_blank" rel="noreferrer">本站源码</a>
-            </div>
-          </div>
-        </div>
-      </section>
+    <div id="window-layer"></div>
 
-      <div class="board-wrap">
-      <div class="board" id="board">
-      <div class="grid" id="modules">
-        <a class="card" href="https://github.com/wizard6" target="_blank" rel="noreferrer">
-          <div class="card-kicker">
-            <div class="card-icon">⌘</div>
-            <span class="badge">就绪</span>
-          </div>
-          <h2>代码仓库</h2>
-          <p>跳转到 GitHub，查看与管理项目、PR 与提交记录。</p>
-          <div class="card-foot"><b>进入</b><span>wizard6</span></div>
-        </a>
-
-        <a class="card" href="https://github.com/wizard6/wizard6.github.io" target="_blank" rel="noreferrer">
-          <div class="card-kicker">
-            <div class="card-icon">◈</div>
-            <span class="badge">本站</span>
-          </div>
-          <h2>站点工程</h2>
-          <p>当前 GitHub Pages 站点仓库，静态页与工作台源码都在这里。</p>
-          <div class="card-foot"><b>进入</b><span>wizard6.github.io</span></div>
-        </a>
-
-        <a class="card" href="https://github.com/wizard6/temp" target="_blank" rel="noreferrer">
-          <div class="card-kicker">
-            <div class="card-icon">✎</div>
-            <span class="badge idle">笔记</span>
-          </div>
-          <h2>知识库入口</h2>
-          <p>连接到你的 Obsidian / forAi 相关仓库，继续沉淀想法与方法论。</p>
-          <div class="card-foot"><b>进入</b><span>temp</span></div>
-        </a>
-
-        <div class="card wide" style="cursor:default;">
-          <div class="card-kicker">
-            <div class="card-icon">☁</div>
-            <span class="badge soon">规划中</span>
-          </div>
-          <h2>今日焦点</h2>
-          <p>主战场：AI 辅助内容创作——优先推进可发布的 2D 小游戏，小说作为副线。可把任务、链接与草稿挂到这里。</p>
-          <div class="card-foot"><b>工作台模块</b><span>可后续接入清单</span></div>
-        </div>
-
-        <div class="card" style="cursor:default;">
-          <div class="card-kicker">
-            <div class="card-icon">◎</div>
-            <span class="badge idle">预留</span>
-          </div>
-          <h2>阅读与灵感</h2>
-          <p>留给读书笔记、摘录与灵感卡片。风格对齐你现有的深色星云站。</p>
-          <div class="card-foot"><b>占位</b><span>soon</span></div>
-        </div>
-
-        <div class="card" style="cursor:default;">
-          <div class="card-kicker">
-            <div class="card-icon">⚡</div>
-            <span class="badge idle">预留</span>
-          </div>
-          <h2>自动化</h2>
-          <p>定时检查、仓库动态、提醒入口可以长在这里，做成你的云端控制台。</p>
-          <div class="card-foot"><b>占位</b><span>soon</span></div>
-        </div>
-
-
-        <p class="section-label">核心功能</p>
-
-        <section class="card func" id="card-todos" style="cursor:default;">
-          <h2>待办事项 <span class="n">TODO</span></h2>
-          <ul class="todo-list" id="todo-list"></ul>
-        </section>
-
-        <section class="card func" id="card-status" style="cursor:default;">
-          <h2>当前状态 <span class="n">STATUS</span></h2>
-          <div class="status-grid" id="status-grid"></div>
-        </section>
-
-        <section class="card func" id="card-templates" style="cursor:default;">
-          <h2>模板 <span class="n">TEMPLATES</span></h2>
-          <div class="tpl-list" id="tpl-list"></div>
-        </section>
-
-        <section class="card func" id="card-nav" style="cursor:default;">
-          <h2>导航 <span class="n">NAV</span></h2>
-          <div class="nav-groups" id="nav-groups"></div>
-        </section>
-
-        <section class="card func full" id="card-software" style="cursor:default;">
-          <h2>使用的软件和账号一览 <span class="n">STACK</span></h2>
-          <div class="soft-list" id="soft-list"></div>
-        </section>
-
-        <section class="card full panel" style="min-height:auto;cursor:default;">
-          <h3>Workbench Notes</h3>
-          <div class="quick">
-            <span class="chip" style="cursor:default;">深色星云风格</span>
-            <span class="chip" style="cursor:default;">毛玻璃面板</span>
-            <span class="chip" style="cursor:default;">模块化入口</span>
-            <a class="chip" href="http://47.95.115.236/" target="_blank" rel="noreferrer">风格参考站</a>
-          </div>
-        </section>
-      </div>
-      </div>
-      <div class="sb-rail" id="sb-rail" aria-hidden="true">
-        <div class="sb-thumb" id="sb-thumb" role="scrollbar" aria-controls="board" aria-orientation="vertical"></div>
-      </div>
-      </div>
-    </div>
-
-    <footer class="site-footer">
-      <div class="footer-inner">
-        <span>wizard6 · 云端工作台</span>
-        <a href="https://github.com/wizard6/wizard6.github.io/blob/master/config/workbench.json">编辑配置</a> · <a href="https://github.com/wizard6/wizard6.github.io">Source</a>
-      </div>
-    </footer>
+    <p class="desktop-hint">从左侧快捷方式打开窗口</p>
   </div>
-  </div>
+
+  <!-- Stub for future Win+R quick run (hidden). Alt+R opens run placeholder via JS. -->
+  <div id="run-dialog" hidden aria-hidden="true"></div>
 
   <script type="module" src="./js/app.js"></script>
 </body>

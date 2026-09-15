@@ -1,7 +1,12 @@
 import { esc } from "../utils.js";
 
-export function renderStatus(status, daypart) {
-  const root = document.getElementById("status-grid");
+/**
+ * @param {object} status
+ * @param {string} daypart
+ * @param {HTMLElement} [rootEl] optional root (defaults to #status-grid)
+ */
+export function renderStatus(status, daypart, rootEl) {
+  const root = rootEl || document.getElementById("status-grid");
   if (!root) return;
   const rows = [
     ["在线", status.online ? (status.label || "云端在线") : "离线"],

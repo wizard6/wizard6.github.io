@@ -14,8 +14,12 @@ function saveTodos(todos) {
   localStorage.setItem(TODO_KEY, JSON.stringify(todos.map(({ id, done }) => ({ id, done }))));
 }
 
-export function renderTodos(todos) {
-  const root = document.getElementById("todo-list");
+/**
+ * @param {Array} todos
+ * @param {HTMLElement} [rootEl] optional root (defaults to #todo-list)
+ */
+export function renderTodos(todos, rootEl) {
+  const root = rootEl || document.getElementById("todo-list");
   if (!root) return;
   if (!todos.length) {
     root.innerHTML = '<p class="empty">暂无待办。可在 config/workbench.json 添加。</p>';
@@ -35,7 +39,7 @@ export function renderTodos(todos) {
       if (!item) return;
       item.done = input.checked;
       saveTodos(todos);
-      renderTodos(todos);
+      renderTodos(todos, root);
     });
   });
 }

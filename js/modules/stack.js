@@ -1,7 +1,11 @@
 import { esc } from "../utils.js";
 
-export function renderSoftware(list) {
-  const root = document.getElementById("soft-list");
+/**
+ * @param {Array} list
+ * @param {HTMLElement} [rootEl] optional root (defaults to #soft-list)
+ */
+export function renderSoftware(list, rootEl) {
+  const root = rootEl || document.getElementById("soft-list");
   if (!root) return;
   if (!list?.length) { root.innerHTML = '<p class="empty">暂无软件/账号。</p>'; return; }
   root.innerHTML = list.map((s) => {
