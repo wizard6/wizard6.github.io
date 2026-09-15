@@ -1,12 +1,12 @@
 /**
- * Simple floating window manager for the desktop shell.
- * Windows live in #window-layer (absolute, under topbar, right of dock).
+ * Floating window manager — centered open, min/max/close.
+ * Windows live in #window-layer.
  */
 let zCounter = 100;
-let cascade = 0;
 let focusedId = null;
 
-const windows = new Map(); // id -> { el, opts }
+/** @type {Map<string, { el: HTMLElement, opts: object, state: 'normal'|'maximized'|'minimized', restore: {left:string,top:string,width:string,height:string}|null }>} */
+const windows = new Map();
 
 function layer() {
   return document.getElementById("window-layer");
@@ -14,7 +14,9 @@ function layer() {
 
 function layerRect() {
   const host = layer();
-  return host ? host.getBoundingClientRect() : { left: 0, top: 0, width: window.innerWidth, height: window.innerHeight };
+  return host
+    ? host.getBoundingClientRect()
+    : { left: 0, top: 0, width: window.innerWidth, height: window.innerHeight };
 }
 
 function bringToFront(id) {
@@ -27,16 +29,119 @@ function bringToFront(id) {
   win.el.classList.add("is-focused");
 }
 
+function snapshotRect(el) {
+  return {
+    left: el.style.left,
+    top: el.style.top,
+    width: el.style.width,
+    height: el.style.height,
+  };
+}
+
+function applyRect(el, rect) {
+  if (!rect) return;
+  el.style.left = rect.left;
+  el.style.top = rect.top;
+  el.style.width = rect.width;
+  el.style.height = rect.height;
+}
+
+function centerPosition(w, h) {
+  const lr = layerRect();
+  const left = Math.max(8, Math.round((lr.width - w) / 2));
+  const top = Math.max(8, Math.round((lr.height - h) / 2));
+  return { left, top };
+}
+
+function setMaxButton(el, maximized) {
+  const btn = el.querySelector(".win-max");
+  if (!btn) return;
+  btn.textContent = maximized ? "❐" : "□";
+  btn.title = maximized ? "还原" : "最大化";
+  btn.setAttribute("aria-label", maximized ? "还原" : "最大化");
+}
+
+function minimizeWindow(id) {
+  const win = windows.get(id);
+  if (!win || win.state === "minimized") return;
+  if (win.state === "normal") {
+    win.restore = snapshotRect(win.el);
+  }
+  win.state = "minimized";
+  win.el.classList.add("is-minimized");
+  win.el.classList.remove("is-maximized");
+  win.el.setAttribute("aria-hidden", "true");
+  document.querySelector(`.dock-btn[data-id="${id}"]`)?.classList.add("is-minimized");
+  if (focusedId === id) {
+    focusedId = null;
+    win.el.classList.remove("is-focused");
+  }
+}
+
+function maximizeWindow(id) {
+  const win = windows.get(id);
+  if (!win) return;
+  if (win.state === "minimized") {
+    restoreWindow(id);
+  }
+  if (win.state === "maximized") {
+    // toggle back to normal
+    win.state = "normal";
+    win.el.classList.remove("is-maximized");
+    applyRect(win.el, win.restore);
+    setMaxButton(win.el, false);
+    bringToFront(id);
+    return;
+  }
+  win.restore = snapshotRect(win.el);
+  win.state = "maximized";
+  win.el.classList.add("is-maximized");
+  win.el.style.left = "0px";
+  win.el.style.top = "0px";
+  win.el.style.width = "100%";
+  win.el.style.height = "100%";
+  setMaxButton(win.el, true);
+  bringToFront(id);
+}
+
+function restoreWindow(id) {
+  const win = windows.get(id);
+  if (!win) return;
+  win.el.classList.remove("is-minimized");
+  win.el.setAttribute("aria-hidden", "false");
+  document.querySelector(`.dock-btn[data-id="${id}"]`)?.classList.remove("is-minimized");
+  if (win.state === "maximized") {
+    win.el.classList.add("is-maximized");
+    win.el.style.left = "0px";
+    win.el.style.top = "0px";
+    win.el.style.width = "100%";
+    win.el.style.height = "100%";
+    setMaxButton(win.el, true);
+  } else {
+    win.state = "normal";
+    win.el.classList.remove("is-maximized");
+    applyRect(win.el, win.restore);
+    setMaxButton(win.el, false);
+  }
+  if (win.state === "minimized") win.state = "normal";
+  // if was minimized from maximized, keep maximized; if from normal, normal
+  // Fix: when minimizing we kept previous state in restore only for geometry.
+  // Track maximized flag separately via class before minimize.
+  bringToFront(id);
+}
+
 function closeWindow(id) {
   const win = windows.get(id);
   if (!win) return;
   win.el.remove();
   windows.delete(id);
+  document.querySelector(`.dock-btn[data-id="${id}"]`)?.classList.remove("is-minimized", "is-active");
   if (focusedId === id) {
     focusedId = null;
     let top = null;
     let topZ = -1;
     windows.forEach((w, wid) => {
+      if (w.state === "minimized") return;
       const z = parseInt(w.el.style.zIndex || "0", 10);
       if (z > topZ) {
         topZ = z;
@@ -56,22 +161,23 @@ function enableDrag(el) {
 
   bar.addEventListener("pointerdown", (e) => {
     if (e.button !== 0) return;
-    if (e.target.closest(".win-close")) return;
+    if (e.target.closest(".win-controls")) return;
+    const id = el.dataset.id;
+    const win = windows.get(id);
+    if (win?.state === "maximized") return;
     dragging = true;
     const rect = el.getBoundingClientRect();
-    // offsets within the window; positions stored relative to layer
     ox = e.clientX - rect.left;
     oy = e.clientY - rect.top;
     bar.setPointerCapture(e.pointerId);
     el.classList.add("is-dragging");
-    bringToFront(el.dataset.id);
+    bringToFront(id);
     e.preventDefault();
   });
 
   bar.addEventListener("pointermove", (e) => {
     if (!dragging) return;
     const lr = layerRect();
-    // convert viewport pointer → layer-local left/top
     let x = e.clientX - ox - lr.left;
     let y = e.clientY - oy - lr.top;
     const maxX = Math.max(40, lr.width - 80);
@@ -86,12 +192,22 @@ function enableDrag(el) {
     if (!dragging) return;
     dragging = false;
     el.classList.remove("is-dragging");
+    const id = el.dataset.id;
+    const win = windows.get(id);
+    if (win && win.state === "normal") {
+      win.restore = snapshotRect(el);
+    }
     try {
       bar.releasePointerCapture(e.pointerId);
     } catch (_) {}
   }
   bar.addEventListener("pointerup", endDrag);
   bar.addEventListener("pointercancel", endDrag);
+
+  bar.addEventListener("dblclick", (e) => {
+    if (e.target.closest(".win-controls")) return;
+    maximizeWindow(el.dataset.id);
+  });
 }
 
 /**
@@ -100,8 +216,30 @@ function enableDrag(el) {
  */
 export function openWindow(id, opts) {
   if (windows.has(id)) {
+    const win = windows.get(id);
+    if (win.state === "minimized") {
+      // restore previous geometry/max state
+      const wasMax = win.el.dataset.wasMax === "1";
+      win.el.classList.remove("is-minimized");
+      win.el.setAttribute("aria-hidden", "false");
+      document.querySelector(`.dock-btn[data-id="${id}"]`)?.classList.remove("is-minimized");
+      if (wasMax) {
+        win.state = "maximized";
+        win.el.classList.add("is-maximized");
+        win.el.style.left = "0px";
+        win.el.style.top = "0px";
+        win.el.style.width = "100%";
+        win.el.style.height = "100%";
+        setMaxButton(win.el, true);
+      } else {
+        win.state = "normal";
+        win.el.classList.remove("is-maximized");
+        applyRect(win.el, win.restore);
+        setMaxButton(win.el, false);
+      }
+    }
     bringToFront(id);
-    return windows.get(id).el;
+    return win.el;
   }
 
   const host = layer();
@@ -115,12 +253,7 @@ export function openWindow(id, opts) {
 
   const w = opts.width || 440;
   const h = opts.height || 360;
-  const offset = (cascade % 8) * 28;
-  cascade += 1;
-
-  // Positions are relative to #window-layer (already right of dock / under topbar)
-  const left = 36 + offset;
-  const top = 20 + offset;
+  const { left, top } = centerPosition(w, h);
 
   el.style.width = w + "px";
   el.style.height = h + "px";
@@ -131,18 +264,41 @@ export function openWindow(id, opts) {
     <div class="win-titlebar">
       <span class="win-icon" aria-hidden="true">${opts.icon || "◇"}</span>
       <span class="win-title">${opts.title || id}</span>
-      <button type="button" class="win-close" aria-label="关闭" title="关闭">×</button>
+      <div class="win-controls">
+        <button type="button" class="win-min" aria-label="最小化" title="最小化">─</button>
+        <button type="button" class="win-max" aria-label="最大化" title="最大化">□</button>
+        <button type="button" class="win-close" aria-label="关闭" title="关闭">×</button>
+      </div>
     </div>
     <div class="win-body"></div>
   `;
 
   const body = el.querySelector(".win-body");
   host.appendChild(el);
-  windows.set(id, { el, opts });
+  windows.set(id, {
+    el,
+    opts,
+    state: "normal",
+    restore: snapshotRect(el),
+  });
 
   el.querySelector(".win-close").addEventListener("click", (e) => {
     e.stopPropagation();
     closeWindow(id);
+  });
+  el.querySelector(".win-min").addEventListener("click", (e) => {
+    e.stopPropagation();
+    const win = windows.get(id);
+    if (!win) return;
+    win.el.dataset.wasMax = win.state === "maximized" ? "1" : "0";
+    if (win.state === "normal" || win.state === "maximized") {
+      if (win.state === "normal") win.restore = snapshotRect(win.el);
+      minimizeWindow(id);
+    }
+  });
+  el.querySelector(".win-max").addEventListener("click", (e) => {
+    e.stopPropagation();
+    maximizeWindow(id);
   });
 
   el.addEventListener("pointerdown", () => bringToFront(id));
@@ -157,7 +313,7 @@ export function openWindow(id, opts) {
 }
 
 export function focusWindow(id) {
-  if (windows.has(id)) bringToFront(id);
+  if (windows.has(id)) openWindow(id, windows.get(id).opts);
 }
 
 export function closeFocused() {
@@ -174,6 +330,18 @@ export function initWm() {
       closeFocused();
     }
   });
+  window.addEventListener("resize", () => {
+    windows.forEach((win, id) => {
+      if (win.state === "maximized") {
+        win.el.style.left = "0px";
+        win.el.style.top = "0px";
+        win.el.style.width = "100%";
+        win.el.style.height = "100%";
+      } else if (win.state === "normal") {
+        // keep centered feel on first paint only; skip live recentering
+      }
+    });
+  });
 }
 
-export { closeWindow, bringToFront };
+export { closeWindow, bringToFront, minimizeWindow, maximizeWindow };
