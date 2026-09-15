@@ -65,6 +65,11 @@
       "title": "日志"
     },
     {
+      "id": "journal-json",
+      "icon": "⊡",
+      "title": "JSON日志"
+    },
+    {
       "id": "stickers",
       "icon": "▤",
       "title": "贴图"

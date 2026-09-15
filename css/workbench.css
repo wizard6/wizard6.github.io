@@ -941,3 +941,72 @@ a.ov-card:hover {
   font-size: 1.05rem;
 }
 
+
+
+/* —— JSON journal —— */
+.json-log {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  height: 100%;
+  margin: -14px -16px -16px;
+  background: #0b0e14;
+  font-family: "JetBrains Mono", "SF Mono", ui-monospace, Menlo, Consolas, "PingFang SC", monospace;
+  font-size: 13px;
+}
+.json-log-bar {
+  display: flex; align-items: center; gap: 10px;
+  padding: 6px 10px; background: #121826;
+  border-bottom: 1px solid rgba(109,139,255,.2);
+}
+.json-log-name { color: #e2e8f0; font-weight: 600; }
+.json-log-badge {
+  font-size: 11px; color: #93c5fd;
+  border: 1px solid rgba(147,197,253,.35); border-radius: 4px; padding: 0 6px;
+}
+.json-log-hint { margin-left: auto; color: #64748b; font-size: 11px; }
+.json-log-stats {
+  display: grid; grid-template-columns: repeat(3, 1fr) auto;
+  gap: 8px; padding: 10px 12px; border-bottom: 1px solid rgba(109,139,255,.12);
+  align-items: center;
+}
+.json-stat { text-align: center; }
+.json-stat strong { display: block; font-size: 1.1rem; color: #e8ecff; }
+.json-stat span { font-size: 10px; color: #64748b; letter-spacing: .06em; }
+.json-chips { display: flex; flex-wrap: wrap; gap: 4px; justify-content: flex-end; }
+.json-chip {
+  font-size: 11px; padding: 2px 7px; border-radius: 999px;
+  border: 1px solid rgba(109,139,255,.28); color: #c8d4ff; background: rgba(109,139,255,.08);
+}
+.json-chip b { margin-right: 4px; }
+.json-log-list { flex: 1; min-height: 0; overflow: auto; padding: 10px 12px 16px; display: grid; gap: 8px; align-content: start; }
+.json-entry {
+  padding: 10px 12px; border-radius: 10px;
+  border: 1px solid rgba(255,255,255,.05); background: rgba(255,255,255,.02);
+}
+.json-entry header { display: flex; align-items: baseline; gap: 8px; }
+.json-entry h3 { margin: 0; font-size: 13px; font-weight: 650; color: #e2e8f0; }
+.json-type {
+  font-size: 11px; font-weight: 700; color: #fbbf24; letter-spacing: .04em;
+}
+.json-meta { margin-top: 4px; color: #64748b; font-size: 11px; }
+.json-tags { margin-top: 6px; display: flex; flex-wrap: wrap; gap: 4px; }
+.json-tag {
+  font-size: 10px; color: #c4b5fd; border: 1px solid rgba(167,139,250,.3);
+  border-radius: 999px; padding: 1px 6px;
+}
+.json-body { margin: 8px 0 0; color: #cbd5e1; white-space: pre-wrap; line-height: 1.5; }
+.json-sample {
+  margin: 8px 0 0; padding: 10px; border-radius: 8px;
+  background: rgba(0,0,0,.25); color: #94a3b8; font-size: 12px; overflow: auto;
+}
+.json-log-foot {
+  display: flex; justify-content: space-between;
+  padding: 4px 10px; background: #1a2233; color: #9fb0d0; font-size: 11px;
+  border-top: 1px solid rgba(109,139,255,.18);
+}
+@media (max-width: 640px) {
+  .json-log-stats { grid-template-columns: repeat(3, 1fr); }
+  .json-chips { grid-column: 1 / -1; justify-content: flex-start; }
+}
+

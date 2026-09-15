@@ -63,6 +63,7 @@ function defaultItems() {
     item("正在创作", "open:writing"),
     item("灵感管理", "open:ideas"),
     item("日志", "open:journal"),
+    item("JSON日志", "open:journal-json"),
     sep(),
     item("贴图", "open:stickers"),
     item("运行…", "open:run", { kbd: "Alt+R" }),

@@ -13,6 +13,7 @@ import { renderBooklist } from "./modules/booklist.js";
 import { renderWriting } from "./modules/writing.js";
 import { renderIdeas } from "./modules/ideas.js";
 import { renderJournal } from "./modules/journal.js";
+import { renderJournalJson } from "./modules/journal-json.js";
 
 let cfg = null;
 let todosCache = [];
@@ -144,6 +145,19 @@ function openShortcut(id) {
       break;
 
 
+
+
+    case "journal-json":
+      openWindow("journal-json", {
+        title: meta.title || "JSON日志",
+        icon: meta.icon || "⊡",
+        width: 640,
+        height: 560,
+        mount(body) {
+          renderJournalJson(body);
+        },
+      });
+      break;
 
     case "journal":
       openWindow("journal", {
