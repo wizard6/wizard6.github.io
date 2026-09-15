@@ -16,7 +16,7 @@
   --ok: #34d399;
   --warn: #fbbf24;
   --shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
-  --dock-w: 60px;
+  --dock-h: 64px;
   --topbar-h: 44px;
   --win-title-h: 36px;
 }
@@ -60,33 +60,37 @@ html, body {
 /* Future sticker overlay */
 #sticker-layer {
   position: fixed;
-  left: var(--dock-w);
+  left: 0;
   top: var(--topbar-h);
   right: 0;
-  bottom: 0;
+  bottom: var(--dock-h);
   z-index: 3;
   pointer-events: none;
 }
 
-/* —— Left dock (Windows-left style) —— */
+/* —— Bottom dock —— */
 .dock {
   position: fixed;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: var(--dock-w);
+  left: 50%;
+  bottom: 12px;
+  transform: translateX(-50%);
+  height: var(--dock-h);
+  width: auto;
+  max-width: calc(100vw - 24px);
   z-index: 40;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
+  justify-content: center;
   gap: 10px;
-  padding: 16px 0;
+  padding: 8px 14px;
   background: #121826;
   background: rgba(18, 24, 38, 0.94);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
-  border-right: 1px solid rgba(140, 168, 255, 0.35);
-  box-shadow: 6px 0 32px rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(140, 168, 255, 0.35);
+  border-radius: 18px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
 }
 
 .dock-btn {
@@ -108,7 +112,7 @@ html, body {
   background: rgba(109, 139, 255, 0.2);
   border-color: rgba(140, 168, 255, 0.45);
   box-shadow: 0 0 18px rgba(109, 139, 255, 0.28);
-  transform: translateY(-1px);
+  transform: translateY(-3px);
 }
 .dock-ico {
   font-size: 1.05rem;
@@ -117,9 +121,9 @@ html, body {
 }
 .dock-tip {
   position: absolute;
-  left: calc(100% + 10px);
-  top: 50%;
-  transform: translateY(-50%) translateX(-4px);
+  left: 50%;
+  bottom: calc(100% + 10px);
+  transform: translateX(-50%) translateY(4px);
   white-space: nowrap;
   padding: 5px 10px;
   border-radius: 8px;
@@ -136,16 +140,16 @@ html, body {
 .dock-btn:hover .dock-tip,
 .dock-btn:focus-visible .dock-tip {
   opacity: 1;
-  transform: translateY(-50%) translateX(0);
+  transform: translateX(-50%) translateY(0);
 }
 
-/* —— Desktop (right of dock) —— */
+/* —— Desktop (above bottom dock) —— */
 .desktop {
   position: fixed;
-  left: var(--dock-w);
+  left: 0;
   top: 0;
   right: 0;
-  bottom: 0;
+  bottom: calc(var(--dock-h) + 20px);
   z-index: 1;
   display: flex;
   flex-direction: column;

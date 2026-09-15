@@ -1,22 +1,54 @@
 {
   "title": "云端工作台",
-  "subtitle": "左侧快捷方式打开窗口 · 贴图 / Win+R 即将接入",
+  "subtitle": "底部 Dock 打开窗口 · 贴图 / Win+R 即将接入",
   "status": {
     "online": true,
     "label": "云端在线",
     "focus": "AI 辅助内容创作：2D 小游戏主线 / 小说副线",
     "mood": "可开工",
-    "note": "桌面壳：左停靠栏 + 浮动窗口；贴图与运行占位待接入"
+    "note": "桌面壳：底部 Dock + 浮动窗口；贴图与运行占位待接入"
   },
   "shortcuts": [
-    { "id": "overview", "icon": "☁", "title": "概览" },
-    { "id": "todos", "icon": "☑", "title": "待办" },
-    { "id": "status", "icon": "◉", "title": "状态" },
-    { "id": "templates", "icon": "▦", "title": "模板" },
-    { "id": "nav", "icon": "⧉", "title": "导航" },
-    { "id": "stack", "icon": "⊞", "title": "软件账号" },
-    { "id": "stickers", "icon": "🖼", "title": "贴图" },
-    { "id": "run", "icon": "▷", "title": "运行" }
+    {
+      "id": "overview",
+      "icon": "☁",
+      "title": "概览"
+    },
+    {
+      "id": "todos",
+      "icon": "☑",
+      "title": "待办"
+    },
+    {
+      "id": "status",
+      "icon": "◉",
+      "title": "状态"
+    },
+    {
+      "id": "templates",
+      "icon": "▦",
+      "title": "模板"
+    },
+    {
+      "id": "nav",
+      "icon": "⧉",
+      "title": "导航"
+    },
+    {
+      "id": "stack",
+      "icon": "⊞",
+      "title": "软件账号"
+    },
+    {
+      "id": "stickers",
+      "icon": "🖼",
+      "title": "贴图"
+    },
+    {
+      "id": "run",
+      "icon": "▷",
+      "title": "运行"
+    }
   ],
   "todos": [
     {
