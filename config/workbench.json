@@ -55,6 +55,11 @@
       "title": "创作"
     },
     {
+      "id": "ideas",
+      "icon": "💡",
+      "title": "灵感"
+    },
+    {
       "id": "stickers",
       "icon": "🖼",
       "title": "贴图"

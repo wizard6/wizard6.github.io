@@ -12,6 +12,7 @@ const DEFAULTS = [
   { id: "reading", icon: "📖", title: "读书" },
   { id: "booklist", icon: "📚", title: "书单" },
   { id: "writing", icon: "✎", title: "创作" },
+  { id: "ideas", icon: "💡", title: "灵感" },
   { id: "stickers", icon: "🖼", title: "贴图" },
   { id: "run", icon: "▷", title: "运行" },
 ];

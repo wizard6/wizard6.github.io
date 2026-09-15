@@ -1,0 +1,46 @@
+#+TITLE: 灵感管理填写说明
+#+AUTHOR: wizard6
+
+* 文件
+- 数据：=data/ideas.org=
+- 说明：=data/ideas-guide.org=
+
+* 一条灵感怎么写
+#+begin_example
+** CAPTURE 一句话灵感 <2026-09-15> :游戏:小说:
+:PROPERTIES:
+:LAST: 2026-09-15
+:SOURCE: 散步/对话/梦
+:PROJECT: 许德拉
+:END:
+补充细节、画面、可执行下一步……
+#+end_example
+
+* 状态
+| 关键字 | 含义 |
+|--------+------|
+| CAPTURE | 刚捕捉，未整理 |
+| IDEA    | 已成形的点子 |
+| DEVELOP | 孵化 / 展开中 |
+| NEXT    | 马上要用 |
+| USED    | 已写入某作品 |
+| DROPPED | 废弃 |
+| WAIT    | 暂存观察 |
+
+* 属性
+| 属性 | 说明 |
+|------+------|
+| LAST / DATE | 记录日期 |
+| SOURCE | 来源 |
+| PROJECT | 关联作品（如 许德拉） |
+| TAGS | 也可写在标题 :标签: 里 |
+
+* 结构建议
+#+begin_example
+* 捕捉箱
+* 点子
+* 孵化中
+* 已用 / 废弃
+#+end_example
+
+需要代填时：发灵感原文、状态、标签、关联作品即可。

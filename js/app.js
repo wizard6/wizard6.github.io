@@ -11,6 +11,7 @@ import { initContextMenu } from "./context-menu.js";
 import { renderReading } from "./modules/reading.js";
 import { renderBooklist } from "./modules/booklist.js";
 import { renderWriting } from "./modules/writing.js";
+import { renderIdeas } from "./modules/ideas.js";
 
 let cfg = null;
 let todosCache = [];
@@ -137,6 +138,19 @@ function openShortcut(id) {
         height: 560,
         mount(body) {
           renderBooklist(body);
+        },
+      });
+      break;
+
+
+    case "ideas":
+      openWindow("ideas", {
+        title: meta.title || "灵感",
+        icon: meta.icon || "💡",
+        width: 640,
+        height: 560,
+        mount(body) {
+          renderIdeas(body);
         },
       });
       break;

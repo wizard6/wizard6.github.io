@@ -8,9 +8,10 @@ import { esc } from "../utils.js";
 const TODO_WORDS = new Set([
   "TODO", "NEXT", "READING", "WAIT", "DONE", "CANCELLED", "CANCELED", "KILL",
   "BOUGHT", "IDEA", "OUTLINE", "DRAFTING", "REVISING", "PUBLISHED", "SHELVED",
+  "CAPTURE", "DEVELOP", "USED", "DROPPED",
 ]);
 
-const DONE_WORDS = new Set(["DONE", "CANCELLED", "CANCELED", "KILL", "PUBLISHED"]);
+const DONE_WORDS = new Set(["DONE", "CANCELLED", "CANCELED", "KILL", "PUBLISHED", "USED", "DROPPED"]);
 
 /**
  * @typedef {{ type:'doc', title?:string, author?:string, children: Node[] }} Doc
@@ -50,7 +51,7 @@ export function parseOrg(source) {
     }
 
     // headline
-    const hl = line.match(/^(\*+)\s+(?:(TODO|NEXT|READING|WAIT|DONE|CANCELLED|CANCELED|KILL|BOUGHT|IDEA|OUTLINE|DRAFTING|REVISING|PUBLISHED|SHELVED)\s+)?(.+?)(?:\s+:([\w@#%：\u4e00-\u9fff/-]+):)?\s*$/);
+    const hl = line.match(/^(\*+)\s+(?:(TODO|NEXT|READING|WAIT|DONE|CANCELLED|CANCELED|KILL|BOUGHT|IDEA|OUTLINE|DRAFTING|REVISING|PUBLISHED|SHELVED|CAPTURE|DEVELOP|USED|DROPPED)\s+)?(.+?)(?:\s+:([\w@#%：\u4e00-\u9fff/-]+):)?\s*$/);
     if (hl) {
       const level = hl[1].length;
       let title = hl[3].trim();
@@ -203,7 +204,7 @@ function renderNodes(nodes, into, opts = {}) {
         const todo = document.createElement("span");
         todo.className = `org-todo ${todoClass(n.todo)}`;
         todo.dataset.todo = n.todo;
-        if (["READING", "NEXT", "WAIT", "DRAFTING", "REVISING", "OUTLINE", "IDEA", "BOUGHT"].includes(n.todo)) {
+        if (["READING", "NEXT", "WAIT", "DRAFTING", "REVISING", "OUTLINE", "IDEA", "BOUGHT", "CAPTURE", "DEVELOP"].includes(n.todo)) {
           todo.classList.add("is-special");
         }
         todo.textContent = n.todo;

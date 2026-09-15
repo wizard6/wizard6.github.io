@@ -61,6 +61,7 @@ function defaultItems() {
     item("最近读书", "open:reading"),
     item("书单", "open:booklist"),
     item("正在创作", "open:writing"),
+    item("灵感管理", "open:ideas"),
     sep(),
     item("贴图", "open:stickers"),
     item("运行…", "open:run", { kbd: "Alt+R" }),
