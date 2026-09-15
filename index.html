@@ -67,9 +67,9 @@
     /* Custom scrollbar (non-native) */
     .sb-rail {
       position: absolute;
-      top: 8px;
+      top: 0;
       right: 2px;
-      bottom: 8px;
+      bottom: 0;
       width: 14px;
       z-index: 5;
       pointer-events: none;
@@ -234,16 +234,17 @@
     .stat span { color: var(--muted); font-size: .75rem; letter-spacing: .04em; }
 
     .board {
-      position: relative;
+      position: relative; /* contain absolute scrollbar; exclude hero */
       flex: 1;
       min-height: 0;
       overflow-x: hidden;
       overflow-y: auto;
       overscroll-behavior: contain;
       scroll-behavior: smooth;
-      padding: 2px 18px 28px 0; /* room for custom rail inside board */
+      padding: 4px 20px 24px 0;
       scrollbar-width: none !important;
       -ms-overflow-style: none !important;
+      isolation: isolate;
     }
     .board::-webkit-scrollbar {
       width: 0 !important;
