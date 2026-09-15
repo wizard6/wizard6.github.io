@@ -68,7 +68,7 @@
     .sb-rail {
       position: absolute;
       top: 0;
-      right: 2px;
+      right: 0;
       bottom: 0;
       width: 14px;
       z-index: 5;
@@ -233,18 +233,23 @@
     }
     .stat span { color: var(--muted); font-size: .75rem; letter-spacing: .04em; }
 
-    .board {
-      position: relative; /* contain absolute scrollbar; exclude hero */
+    .board-wrap {
+      position: relative;
       flex: 1;
+      min-height: 0;
+      display: flex;
+    }
+    .board {
+      flex: 1;
+      min-width: 0;
       min-height: 0;
       overflow-x: hidden;
       overflow-y: auto;
       overscroll-behavior: contain;
       scroll-behavior: smooth;
-      padding: 4px 20px 24px 0;
+      padding: 4px 8px 24px 0;
       scrollbar-width: none !important;
       -ms-overflow-style: none !important;
-      isolation: isolate;
     }
     .board::-webkit-scrollbar {
       width: 0 !important;
@@ -415,10 +420,8 @@
         </div>
       </section>
 
+      <div class="board-wrap">
       <div class="board" id="board">
-      <div class="sb-rail" id="sb-rail" aria-hidden="true">
-        <div class="sb-thumb" id="sb-thumb" role="scrollbar" aria-controls="board" aria-orientation="vertical"></div>
-      </div>
       <div class="grid" id="modules">
         <a class="card" href="https://github.com/wizard6" target="_blank" rel="noreferrer">
           <div class="card-kicker">
@@ -489,6 +492,10 @@
             <a class="chip" href="http://47.95.115.236/" target="_blank" rel="noreferrer">风格参考站</a>
           </div>
         </section>
+      </div>
+      </div>
+      <div class="sb-rail" id="sb-rail" aria-hidden="true">
+        <div class="sb-thumb" id="sb-thumb" role="scrollbar" aria-controls="board" aria-orientation="vertical"></div>
       </div>
       </div>
     </div>
