@@ -919,3 +919,25 @@ a.ov-card:hover {
   border-top: 1px dotted #334155;
   margin: 8px 0;
 }
+
+
+/* Monochrome dock / desk icons (no color emoji) */
+.dock-ico,
+.desk-icon .ico,
+.win-icon {
+  font-family: "Segoe UI Symbol", "Noto Sans Symbols 2", "Apple Symbols", ui-sans-serif, system-ui, sans-serif;
+  font-variant-emoji: text;
+  font-style: normal;
+  color: inherit;
+  filter: none;
+}
+.dock-ico {
+  font-size: 1.05rem;
+  line-height: 1;
+  color: #d5def7;
+}
+.desk-icon .ico {
+  color: #d5def7;
+  font-size: 1.05rem;
+}
+

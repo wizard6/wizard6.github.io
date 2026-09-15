@@ -53,7 +53,7 @@ function openShortcut(id) {
     case "overview":
       openWindow("overview", {
         title: meta.title || "概览",
-        icon: meta.icon || "☁",
+        icon: meta.icon || "⌂",
         width: 560,
         height: 520,
         mount(body) {
@@ -65,7 +65,7 @@ function openShortcut(id) {
     case "todos":
       openWindow("todos", {
         title: meta.title || "待办",
-        icon: meta.icon || "☑",
+        icon: meta.icon || "☐",
         width: 420,
         height: 400,
         mount(body) {
@@ -79,7 +79,7 @@ function openShortcut(id) {
     case "status":
       openWindow("status", {
         title: meta.title || "状态",
-        icon: meta.icon || "◉",
+        icon: meta.icon || "●",
         width: 400,
         height: 360,
         mount(body) {
@@ -133,7 +133,7 @@ function openShortcut(id) {
     case "booklist":
       openWindow("booklist", {
         title: meta.title || "书单",
-        icon: meta.icon || "📚",
+        icon: meta.icon || "☰",
         width: 640,
         height: 560,
         mount(body) {
@@ -146,7 +146,7 @@ function openShortcut(id) {
     case "ideas":
       openWindow("ideas", {
         title: meta.title || "灵感",
-        icon: meta.icon || "💡",
+        icon: meta.icon || "✶",
         width: 640,
         height: 560,
         mount(body) {
@@ -170,7 +170,7 @@ function openShortcut(id) {
     case "reading":
       openWindow("reading", {
         title: meta.title || "读书",
-        icon: meta.icon || "📖",
+        icon: meta.icon || "≡",
         width: 640,
         height: 560,
         mount(body) {
@@ -182,7 +182,7 @@ function openShortcut(id) {
     case "stickers":
       openWindow("stickers", {
         title: meta.title || "贴图",
-        icon: meta.icon || "🖼",
+        icon: meta.icon || "▤",
         width: 360,
         height: 280,
         mount(body) {

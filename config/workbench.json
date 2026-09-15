@@ -11,17 +11,17 @@
   "shortcuts": [
     {
       "id": "overview",
-      "icon": "☁",
+      "icon": "⌂",
       "title": "概览"
     },
     {
       "id": "todos",
-      "icon": "☑",
+      "icon": "☐",
       "title": "待办"
     },
     {
       "id": "status",
-      "icon": "◉",
+      "icon": "●",
       "title": "状态"
     },
     {
@@ -41,12 +41,12 @@
     },
     {
       "id": "reading",
-      "icon": "📖",
+      "icon": "≡",
       "title": "读书"
     },
     {
       "id": "booklist",
-      "icon": "📚",
+      "icon": "☰",
       "title": "书单"
     },
     {
@@ -56,12 +56,12 @@
     },
     {
       "id": "ideas",
-      "icon": "💡",
+      "icon": "✶",
       "title": "灵感"
     },
     {
       "id": "stickers",
-      "icon": "🖼",
+      "icon": "▤",
       "title": "贴图"
     },
     {
