@@ -12,6 +12,7 @@ import { renderReading } from "./modules/reading.js";
 import { renderBooklist } from "./modules/booklist.js";
 import { renderWriting } from "./modules/writing.js";
 import { renderIdeas } from "./modules/ideas.js";
+import { renderJournal } from "./modules/journal.js";
 
 let cfg = null;
 let todosCache = [];
@@ -142,6 +143,19 @@ function openShortcut(id) {
       });
       break;
 
+
+
+    case "journal":
+      openWindow("journal", {
+        title: meta.title || "日志",
+        icon: meta.icon || "▣",
+        width: 640,
+        height: 560,
+        mount(body) {
+          renderJournal(body);
+        },
+      });
+      break;
 
     case "ideas":
       openWindow("ideas", {

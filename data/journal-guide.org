@@ -1,0 +1,52 @@
+#+TITLE: 日志填写说明
+#+AUTHOR: wizard6
+
+* 文件
+- 数据：=data/journal.org=
+- 说明：=data/journal-guide.org=
+
+* 一条日志怎么写
+#+begin_example
+** NOTE 标题 <2026-09-15> :工作:心情:
+:PROPERTIES:
+:LAST: 2026-09-15
+:MOOD: 平静
+:DURATION: 25m
+:END:
+正文……
+#+end_example
+
+也可按日期树：
+
+#+begin_example
+* 2026-09-15 一
+** WORK 推进许德拉大纲
+** LIFE 散步 20 分钟
+#+end_example
+
+* 状态
+| 关键字 | 含义 |
+|--------+------|
+| NOTE  | 一般记录 |
+| WORK  | 工作 / 创作相关 |
+| LIFE  | 生活 |
+| EVENT | 事件 / 节点 |
+| TODO  | 当日待办备忘 |
+| DONE  | 已完成事项 |
+
+* 属性（可选）
+| 属性 | 说明 |
+|------+------|
+| LAST / DATE | 日期 |
+| MOOD | 心情 |
+| DURATION / 时长 | 花费时间 |
+| PROJECT | 关联作品（如 许德拉） |
+
+* 结构建议
+#+begin_example
+* 今日
+* 近期
+* 归档
+#+end_example
+
+需要代填时：发日期、类型、标题、正文即可。

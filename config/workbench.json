@@ -60,6 +60,11 @@
       "title": "灵感"
     },
     {
+      "id": "journal",
+      "icon": "▣",
+      "title": "日志"
+    },
+    {
       "id": "stickers",
       "icon": "▤",
       "title": "贴图"

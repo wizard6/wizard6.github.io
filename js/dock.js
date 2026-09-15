@@ -13,6 +13,7 @@ const DEFAULTS = [
   { id: "booklist", icon: "☰", title: "书单" },
   { id: "writing", icon: "✎", title: "创作" },
   { id: "ideas", icon: "✶", title: "灵感" },
+  { id: "journal", icon: "▣", title: "日志" },
   { id: "stickers", icon: "▤", title: "贴图" },
   { id: "run", icon: "▷", title: "运行" },
 ];
