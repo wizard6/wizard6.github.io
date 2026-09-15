@@ -47,7 +47,7 @@ function setOutline(orgRoot, expand) {
     const body = h.querySelector(":scope > .org-h-body");
     const fold = h.querySelector(":scope > .org-h-row .org-fold");
     if (body) body.hidden = !expand;
-    if (fold && !fold.disabled) fold.textContent = expand ? "▾" : "▸";
+    if (fold && !fold.disabled) fold.classList.toggle("is-collapsed", !expand);
     const row = h.querySelector(":scope > .org-h-row");
     if (row) row.setAttribute("aria-expanded", expand ? "true" : "false");
   });

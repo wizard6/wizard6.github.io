@@ -803,8 +803,51 @@ a.ov-card:hover {
   min-height: 1.55em;
 }
 .org-classic .org-h-row:hover { background: rgba(109,139,255,.1); }
+.org-fold {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  border: none;
+  padding: 0;
+  margin: 0 2px 0 0;
+  background: transparent;
+  color: #7c8aa5;
+  cursor: pointer;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 4px;
+  transition: background .15s, color .15s;
+}
+.org-fold:hover:not(:disabled) {
+  background: rgba(109, 139, 255, 0.16);
+  color: #c7d2fe;
+}
+.org-fold:disabled,
+.org-fold.is-leaf {
+  cursor: default;
+  opacity: 0.35;
+}
+.org-fold.is-leaf .org-caret { opacity: 0; }
+.org-caret {
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg); /* expanded: points down-ish */
+  transform-origin: center;
+  transition: transform .16s ease;
+  margin-top: -2px;
+}
+.org-fold.is-collapsed .org-caret {
+  transform: rotate(-45deg); /* collapsed: points right */
+  margin-top: 0;
+  margin-left: -1px;
+}
 .org-classic .org-fold {
-  width: 1em; color: #64748b; font-size: 11px; flex: 0 0 auto;
+  width: 14px;
+  height: 14px;
 }
 .org-classic .org-stars {
   color: inherit;

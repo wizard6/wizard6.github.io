@@ -180,8 +180,16 @@ function renderNodes(nodes, into, opts = {}) {
       fold.type = "button";
       fold.className = "org-fold";
       fold.setAttribute("aria-label", "折叠");
-      fold.textContent = n.children.length ? (n.collapsed ? "▸" : "▾") : "·";
-      if (!n.children.length) fold.disabled = true;
+      const caret = document.createElement("span");
+      caret.className = "org-caret";
+      caret.setAttribute("aria-hidden", "true");
+      fold.appendChild(caret);
+      if (!n.children.length) {
+        fold.disabled = true;
+        fold.classList.add("is-leaf");
+      } else if (n.collapsed) {
+        fold.classList.add("is-collapsed");
+      }
 
       const stars = document.createElement("span");
       stars.className = "org-stars";
@@ -238,7 +246,7 @@ function renderNodes(nodes, into, opts = {}) {
         wrap.classList.toggle("is-collapsed");
         const collapsed = wrap.classList.contains("is-collapsed");
         body.hidden = collapsed;
-        fold.textContent = collapsed ? "▸" : "▾";
+        fold.classList.toggle("is-collapsed", collapsed);
         head.setAttribute("aria-expanded", collapsed ? "false" : "true");
       };
       fold.addEventListener("click", (e) => {
