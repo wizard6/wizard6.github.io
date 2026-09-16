@@ -1,6 +1,329 @@
 {
   "title": "数值设计库",
   "version": 1,
-  "categories": ["战斗", "成长", "经济", "掉落", "关卡", "其他"],
-  "entries": []
+  "categories": [
+    "战斗",
+    "成长",
+    "经济",
+    "掉落",
+    "关卡",
+    "其他"
+  ],
+  "entries": [
+    {
+      "id": "hyd-atk-curve",
+      "name": "攻击力成长",
+      "category": "成长",
+      "project": "许德拉",
+      "unit": "点",
+      "formula": "base + level * k",
+      "params": {
+        "base": 10,
+        "k": 2.5
+      },
+      "table": [
+        {
+          "level": 1,
+          "value": 12.5
+        },
+        {
+          "level": 5,
+          "value": 22.5
+        },
+        {
+          "level": 10,
+          "value": 35
+        },
+        {
+          "level": 20,
+          "value": 60
+        }
+      ],
+      "tags": [
+        "战斗",
+        "主线"
+      ],
+      "notes": "前期偏平，10 级后再明显拉开"
+    },
+    {
+      "id": "hyd-hp-curve",
+      "name": "生命成长",
+      "category": "成长",
+      "project": "许德拉",
+      "unit": "点",
+      "formula": "base * (1 + level * r)",
+      "params": {
+        "base": 100,
+        "r": 0.08
+      },
+      "table": [
+        {
+          "level": 1,
+          "value": 108
+        },
+        {
+          "level": 5,
+          "value": 140
+        },
+        {
+          "level": 10,
+          "value": 180
+        },
+        {
+          "level": 20,
+          "value": 260
+        }
+      ],
+      "tags": [
+        "生存"
+      ],
+      "notes": "保证 3 次失误仍可操作"
+    },
+    {
+      "id": "hyd-crit-rate",
+      "name": "暴击率上限",
+      "category": "战斗",
+      "project": "许德拉",
+      "unit": "%",
+      "formula": "min(softcap, base + gear)",
+      "params": {
+        "base": 5,
+        "softcap": 45
+      },
+      "table": [
+        {
+          "key": "白装",
+          "value": 5
+        },
+        {
+          "key": "蓝装",
+          "value": 15
+        },
+        {
+          "key": "紫装",
+          "value": 30
+        },
+        {
+          "key": "橙装",
+          "value": 45
+        }
+      ],
+      "tags": [
+        "暴击",
+        "装备"
+      ],
+      "notes": "软上限 45%，避免秒杀节奏"
+    },
+    {
+      "id": "hyd-enemy-hp",
+      "name": "小怪血量",
+      "category": "战斗",
+      "project": "许德拉",
+      "unit": "点",
+      "formula": "playerAtk * hitsToKill",
+      "params": {
+        "hitsToKill": 4
+      },
+      "table": [
+        {
+          "key": "序章",
+          "value": 40
+        },
+        {
+          "key": "第一章",
+          "value": 70
+        },
+        {
+          "key": "第二章",
+          "value": 110
+        }
+      ],
+      "tags": [
+        "敌人",
+        "手感"
+      ],
+      "notes": "目标：标准武器 3~5 下击杀"
+    },
+    {
+      "id": "hyd-gold-drop",
+      "name": "金币掉落期望",
+      "category": "掉落",
+      "project": "许德拉",
+      "unit": "金/怪",
+      "formula": "floor(base * chapterMul * luck)",
+      "params": {
+        "base": 8,
+        "chapterMul": 1.15,
+        "luck": 1.0
+      },
+      "table": [
+        {
+          "key": "普通怪",
+          "value": 8
+        },
+        {
+          "key": "精英",
+          "value": 28
+        },
+        {
+          "key": "Boss",
+          "value": 120
+        }
+      ],
+      "tags": [
+        "经济"
+      ],
+      "notes": "保证 10 分钟够买一件过渡装"
+    },
+    {
+      "id": "hyd-shop-price",
+      "name": "商店主武器价格",
+      "category": "经济",
+      "project": "许德拉",
+      "unit": "金",
+      "formula": "tierBase * rarityMul",
+      "params": {
+        "tierBase": 50,
+        "rarityMul": 1.8
+      },
+      "table": [
+        {
+          "key": "T1",
+          "value": 50
+        },
+        {
+          "key": "T2",
+          "value": 90
+        },
+        {
+          "key": "T3",
+          "value": 160
+        },
+        {
+          "key": "T4",
+          "value": 280
+        }
+      ],
+      "tags": [
+        "商店"
+      ],
+      "notes": "T2 应在第一章中段可负担"
+    },
+    {
+      "id": "hyd-stage-time",
+      "name": "关卡目标时长",
+      "category": "关卡",
+      "project": "许德拉",
+      "unit": "分钟",
+      "formula": null,
+      "params": {},
+      "table": [
+        {
+          "key": "教程",
+          "value": 3
+        },
+        {
+          "key": "常规关",
+          "value": 8
+        },
+        {
+          "key": "精英关",
+          "value": 12
+        },
+        {
+          "key": "Boss关",
+          "value": 15
+        }
+      ],
+      "tags": [
+        "节奏",
+        "体验"
+      ],
+      "notes": "移动端单次会话 < 20 分钟"
+    },
+    {
+      "id": "hyd-exp-curve",
+      "name": "升级经验",
+      "category": "成长",
+      "project": "许德拉",
+      "unit": "EXP",
+      "formula": "round(40 * level ^ 1.35)",
+      "params": {
+        "a": 40,
+        "p": 1.35
+      },
+      "table": [
+        {
+          "level": 1,
+          "value": 40
+        },
+        {
+          "level": 5,
+          "value": 136
+        },
+        {
+          "level": 10,
+          "value": 356
+        },
+        {
+          "level": 20,
+          "value": 914
+        }
+      ],
+      "tags": [
+        "经验"
+      ],
+      "notes": "前 10 级要有频繁反馈"
+    },
+    {
+      "id": "generic-dps-check",
+      "name": "DPS 校验式",
+      "category": "战斗",
+      "project": "通用",
+      "unit": "伤害/秒",
+      "formula": "atk * (1 + critRate * critMul) / cooldown",
+      "params": {
+        "atk": 35,
+        "critRate": 0.2,
+        "critMul": 0.5,
+        "cooldown": 0.8
+      },
+      "table": [],
+      "tags": [
+        "工具",
+        "校验"
+      ],
+      "notes": "用于快速对比武器方案"
+    },
+    {
+      "id": "hyd-stamina",
+      "name": "体力消耗",
+      "category": "其他",
+      "project": "许德拉",
+      "unit": "点/行动",
+      "formula": "actionCost * terrainMul",
+      "params": {
+        "actionCost": 5,
+        "terrainMul": 1.2
+      },
+      "table": [
+        {
+          "key": "攻击",
+          "value": 5
+        },
+        {
+          "key": "冲刺",
+          "value": 8
+        },
+        {
+          "key": "技能",
+          "value": 15
+        }
+      ],
+      "tags": [
+        "资源"
+      ],
+      "notes": "避免无脑技能循环"
+    }
+  ]
 }
