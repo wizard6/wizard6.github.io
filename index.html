@@ -1,1 +1,64 @@
-<!-- curve dock entry is included in the ready payload -->
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="wizard6 · 云端工作台" />
+  <title>云端工作台 · wizard6</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Noto+Serif+SC:wght@500;700&family=Zhi+Mang+Xing&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./css/workbench.css" />
+  <script>
+    try {
+      if (sessionStorage.getItem("wb_gate_v1") !== "ok") {
+        document.documentElement.classList.add("is-locked");
+      }
+    } catch (e) {
+      document.documentElement.classList.add("is-locked");
+    }
+  </script>
+</head>
+<body>
+  <div class="nebula" aria-hidden="true"></div>
+  <div id="sticker-layer" aria-hidden="true"></div>
+
+  <aside class="dock" id="dock" aria-label="底部 Dock">
+    <button type="button" class="dock-btn" data-id="overview" title="概览" aria-label="概览"><span class="dock-ico" aria-hidden="true">⌂</span><span class="dock-tip">概览</span></button>
+    <button type="button" class="dock-btn" data-id="todos" title="待办" aria-label="待办"><span class="dock-ico" aria-hidden="true">☐</span><span class="dock-tip">待办</span></button>
+    <button type="button" class="dock-btn" data-id="status" title="状态" aria-label="状态"><span class="dock-ico" aria-hidden="true">●</span><span class="dock-tip">状态</span></button>
+    <button type="button" class="dock-btn" data-id="templates" title="模板" aria-label="模板"><span class="dock-ico" aria-hidden="true">▤</span><span class="dock-tip">模板</span></button>
+    <button type="button" class="dock-btn" data-id="nav" title="导航" aria-label="导航"><span class="dock-ico" aria-hidden="true">⧉</span><span class="dock-tip">导航</span></button>
+    <button type="button" class="dock-btn" data-id="reading" title="读书" aria-label="读书"><span class="dock-ico" aria-hidden="true">≡</span><span class="dock-tip">读书</span></button>
+    <button type="button" class="dock-btn" data-id="booklist" title="书单" aria-label="书单"><span class="dock-ico" aria-hidden="true">☰</span><span class="dock-tip">书单</span></button>
+    <button type="button" class="dock-btn" data-id="writing" title="创作" aria-label="创作"><span class="dock-ico" aria-hidden="true">✎</span><span class="dock-tip">创作</span></button>
+    <button type="button" class="dock-btn" data-id="ideas" title="灵感" aria-label="灵感"><span class="dock-ico" aria-hidden="true">✦</span><span class="dock-tip">灵感</span></button>
+    <button type="button" class="dock-btn" data-id="journal" title="日志" aria-label="日志"><span class="dock-ico" aria-hidden="true">▣</span><span class="dock-tip">日志</span></button>
+    <button type="button" class="dock-btn" data-id="journal-json" title="JSON日志" aria-label="JSON日志"><span class="dock-ico" aria-hidden="true">⊡</span><span class="dock-tip">JSON日志</span></button>
+    <button type="button" class="dock-btn" data-id="calendar" title="日历" aria-label="日历"><span class="dock-ico" aria-hidden="true">▥</span><span class="dock-tip">日历</span></button>
+    <button type="button" class="dock-btn" data-id="stats-db" title="数值库" aria-label="数值库"><span class="dock-ico" aria-hidden="true">⬡</span><span class="dock-tip">数值库</span></button>
+    <button type="button" class="dock-btn" data-id="curves" title="曲线" aria-label="曲线"><span class="dock-ico" aria-hidden="true">∿</span><span class="dock-tip">曲线</span></button>
+    <button type="button" class="dock-btn" data-id="stack" title="软件账号" aria-label="软件账号"><span class="dock-ico" aria-hidden="true">⊞</span><span class="dock-tip">软件账号</span></button>
+    <button type="button" class="dock-btn" data-id="stickers" title="贴图" aria-label="贴图"><span class="dock-ico" aria-hidden="true">▤</span><span class="dock-tip">贴图</span></button>
+    <button type="button" class="dock-btn" data-id="run" title="运行" aria-label="运行"><span class="dock-ico" aria-hidden="true">▷</span><span class="dock-tip">运行</span></button>
+  </aside>
+
+  <div class="desktop">
+    <header class="topbar">
+      <a class="brand" href="./">wizard6<span>CLOUD WORKBENCH</span></a>
+      <div class="topbar-meta">
+        <span class="pill"><i class="dot" aria-hidden="true"></i> <span class="pill-label">云端在线</span></span>
+        <span id="clock">--:--</span>
+      </div>
+    </header>
+
+    <div class="desktop-icons" id="desktop-icons" aria-label="桌面快捷方式"></div>
+    <div id="window-layer"></div>
+    <p class="desktop-hint">从底部 Dock 打开窗口</p>
+  </div>
+
+  <div id="run-dialog" hidden aria-hidden="true"></div>
+
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>
