@@ -16,6 +16,7 @@ const DEFAULTS = [
   { id: "journal", icon: "▣", title: "日志" },
   { id: "journal-json", icon: "⊡", title: "JSON日志" },
   { id: "calendar", icon: "▥", title: "日历" },
+  { id: "stats-db", icon: "⬡", title: "数值库" },
   { id: "stickers", icon: "▤", title: "贴图" },
   { id: "run", icon: "▷", title: "运行" },
 ];

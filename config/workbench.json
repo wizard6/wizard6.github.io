@@ -75,6 +75,11 @@
       "title": "日历"
     },
     {
+      "id": "stats-db",
+      "icon": "⬡",
+      "title": "数值库"
+    },
+    {
       "id": "stickers",
       "icon": "▤",
       "title": "贴图"

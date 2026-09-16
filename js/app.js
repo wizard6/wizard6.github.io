@@ -15,6 +15,7 @@ import { renderIdeas } from "./modules/ideas.js";
 import { renderJournal } from "./modules/journal.js";
 import { renderJournalJson } from "./modules/journal-json.js";
 import { renderCalendar } from "./modules/calendar.js";
+import { renderStatsDb } from "./modules/stats-db.js";
 import { requireGate } from "./auth/gate.js";
 
 let cfg = null;
@@ -149,6 +150,19 @@ function openShortcut(id) {
 
 
 
+
+
+    case "stats-db":
+      openWindow("stats-db", {
+        title: meta.title || "数值库",
+        icon: meta.icon || "⬡",
+        width: 980,
+        height: 600,
+        mount(body) {
+          renderStatsDb(body);
+        },
+      });
+      break;
 
     case "calendar":
       openWindow("calendar", {

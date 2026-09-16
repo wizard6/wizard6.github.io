@@ -65,6 +65,7 @@ function defaultItems() {
     item("日志", "open:journal"),
     item("JSON日志", "open:journal-json"),
     item("日历", "open:calendar"),
+    item("数值库", "open:stats-db"),
     sep(),
     item("贴图", "open:stickers"),
     item("运行…", "open:run", { kbd: "Alt+R" }),
